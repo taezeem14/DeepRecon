@@ -1,7 +1,5 @@
 # 🕵️ DeepRecon - Dark Web OSINT & Recon Tool
 
-&#x20;&#x20;
-
 DeepRecon is a **Dark Web OSINT framework** that allows security researchers to crawl `.onion` websites via the Tor network, perform keyword-based searches, collect intelligence, and generate reports.
 It is designed for **ethical hacking, threat intelligence, and research purposes**.
 
@@ -46,6 +44,34 @@ Or manually:
 
 ```bash
 pip install -r requirements.txt
+```
+
+### 3. Install and Configure Tor
+
+DeepRecon requires **Tor service** running on your system for `.onion` access.
+
+#### **Linux / Kali**
+
+```bash
+sudo apt update && sudo apt install tor -y
+sudo service tor start
+```
+
+Default Tor SOCKS proxy: `127.0.0.1:9050`
+
+#### **Windows**
+
+1. Download **Tor Expert Bundle** from [https://www.torproject.org/download/tor/](https://www.torproject.org/download/tor/)
+2. Extract it and run:
+
+```powershell
+tor.exe
+```
+
+#### **Verify Tor**
+
+```bash
+curl --socks5 127.0.0.1:9050 https://check.torproject.org/
 ```
 
 ---
@@ -104,5 +130,6 @@ python main.py
 ## ⚠ Disclaimer
 
 This tool is intended for **educational and research purposes only**.
-
 The author is **not responsible for any misuse** of this tool.
+
+---
