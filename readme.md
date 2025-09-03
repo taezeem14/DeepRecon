@@ -104,4 +104,5 @@ python main.py
 ## ⚠ Disclaimer
 
 This tool is intended for **educational and research purposes only**.
+
 The author is **not responsible for any misuse** of this tool.
