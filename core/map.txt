@@ -1,0 +1,19 @@
+DeepRecon/
+│
+├── main.py
+├── config.py
+├── requirements.txt
+│
+├── core/
+│   ├── tor_manager.py
+│   ├── crawler.py
+│   ├── extractor.py
+│   ├── report_generator.py
+│
+├── storage/
+│   ├── database.py
+│   ├── encryption.py
+│
+└── utils/
+    ├── banner.py
+    ├── opsec.py
