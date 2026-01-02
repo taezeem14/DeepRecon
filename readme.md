@@ -21,7 +21,7 @@ It is designed for **ethical hacking, threat intelligence, and research purposes
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/DeepRecon.git
+git clone https://github.com/taezeem14/DeepRecon.git
 cd DeepRecon
 ```
 
@@ -133,3 +133,4 @@ This tool is intended for **educational and research purposes only**.
 The author is **not responsible for any misuse** of this tool.
 
 ---
+
