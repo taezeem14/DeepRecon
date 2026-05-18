@@ -79,4 +79,11 @@ USER_AGENT = _get_str(
 ENABLE_PDF_EXPORT = _get_bool("ENABLE_PDF_EXPORT", False)
 ENABLE_HEADER_LOGGING = _get_bool("ENABLE_HEADER_LOGGING", True)
 
+AI_PROVIDER = _get_str("AI_PROVIDER", "ollama")  # ollama, openai, anthropic, openrouter
+AI_MODEL = _get_str("AI_MODEL", "")
+OPENAI_API_KEY = _get_str("OPENAI_API_KEY", "")
+ANTHROPIC_API_KEY = _get_str("ANTHROPIC_API_KEY", "")
+OPENROUTER_API_KEY = _get_str("OPENROUTER_API_KEY", "")
+OLLAMA_URL = _get_str("OLLAMA_URL", "http://127.0.0.1:11434")
+
 BASE_DIR = Path(__file__).resolve().parent
