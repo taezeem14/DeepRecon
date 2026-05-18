@@ -12,6 +12,8 @@ from rich.table import Table
 
 from config import CRAWL_DELAY, CRAWL_DEPTH, CRAWL_WORKERS, DB_PATH, MAX_RETRIES, REQUEST_TIMEOUT, TOR_PROXY
 from core.crawler import AsyncCrawler, crawl_recursive
+from core.search_engines import AsyncMetaSearch
+from core.ai_analyzer import AIAnalyzer
 from core.reporter import ReportGenerator
 from core.searcher import Searcher
 from storage.db import DeepReconDB
@@ -160,6 +162,59 @@ def _generate_report(db: DeepReconDB) -> None:
         console.print(f"[green]PDF written:[/green] {outputs['pdf']}")
 
 
+def _run_metasearch(db: DeepReconDB) -> None:
+    query = Prompt.ask("Enter global Dark Web search query")
+    console.print(f"[bold cyan]Dispatching Metasearch Spiders for: '{query}'...[/bold cyan]")
+    
+    meta = AsyncMetaSearch()
+    results = asyncio.run(meta.search(query))
+    
+    if not results:
+        console.print("[yellow]No targets found across dark web search engines.[/yellow]")
+        return
+        
+    table = Table(title=f"Meta-Search Targets for '{query}'")
+    table.add_column("Onion URL", style="cyan")
+    table.add_column("Discovered By Engines", style="magenta")
+    for r in results[:15]:
+        table.add_row(r["url"], ", ".join(r["found_by"]))
+    console.print(table)
+    
+    if Confirm.ask("Load these URLs into a new scan session?"):
+        session_name = _timestamp_name(f"metasearch_{query[:5]}")
+        session_id = db.create_session(session_name, seed_url=f"metasearch:{query}")
+        
+        urls = [r["url"] for r in results[:10]]  # limit to top 10 to be safe
+        crawler = AsyncCrawler(db=db, depth=1)
+        console.print(f"Loading {len(urls)} targets into Tor spider...")
+        asyncio.run(crawler.crawl(urls))
+        console.print("[green]Scan complete.[/green]")
+
+def _ai_summarize_session(db: DeepReconDB) -> None:
+    session_id = IntPrompt.ask("Enter Session ID to Summarize")
+    session = db.get_session(session_id)
+    if not session:
+        console.print("[red]Session not found.[/red]")
+        return
+        
+    pages = db.get_session_pages(session_id)
+    if not pages:
+        console.print("No data parsed in this session.")
+        return
+        
+    console.print("[bold cyan]Connecting to local AI Analyst (Ollama)...[/bold cyan]")
+    analyzer = AIAnalyzer()
+    
+    for page in pages[:3]: # summarize top 3 domains
+        console.print(f"\nAnalyzing [cyan]{page['url']}[/cyan]...")
+        summary = analyzer.generate_investigation_summary(
+            page['url'], 
+            page.get('content', ''), 
+            page.get('meta', {})
+        )
+        console.print(Panel.fit(summary, title=f"AI Output: {page['title'][:30]}", border_style="green"))
+
+
 def main() -> None:
     """Run the interactive DeepRecon CLI or Web UI."""
     import argparse
@@ -183,29 +238,35 @@ def main() -> None:
     _show_banner(tor_manager)
 
     while True:
-        console.print("\n[bold cyan]1[/bold cyan] Crawl target")
-        console.print("[bold cyan]2[/bold cyan] Search stored pages")
-        console.print("[bold cyan]3[/bold cyan] Renew Tor IP")
-        console.print("[bold cyan]4[/bold cyan] Generate session report")
-        console.print("[bold cyan]5[/bold cyan] List sessions")
-        console.print("[bold cyan]6[/bold cyan] Exit")
+        console.print("\n[bold cyan]1[/bold cyan] Crawl direct target")
+        console.print("[bold cyan]2[/bold cyan] Global Dark Web Meta-Search (Multi-Engine)")
+        console.print("[bold cyan]3[/bold cyan] Search stored pages locally")
+        console.print("[bold cyan]4[/bold cyan] Generate AI Analysis on Session")
+        console.print("[bold cyan]5[/bold cyan] Renew Tor IP")
+        console.print("[bold cyan]6[/bold cyan] Generate session report")
+        console.print("[bold cyan]7[/bold cyan] List sessions")
+        console.print("[bold cyan]8[/bold cyan] Exit")
 
-        choice = Prompt.ask("Select an option", choices=["1", "2", "3", "4", "5", "6"])
+        choice = Prompt.ask("Select an option", choices=["1", "2", "3", "4", "5", "6", "7", "8"])
 
         if choice == "1":
             _crawl_site(db)
         elif choice == "2":
-            _search_pages(db)
+            _run_metasearch(db)
         elif choice == "3":
+            _search_pages(db)
+        elif choice == "4":
+            _ai_summarize_session(db)
+        elif choice == "5":
             if renew_ip():
                 console.print("[green]Tor identity renewal requested.[/green]")
             else:
                 console.print("[red]Unable to renew Tor identity.[/red]")
-        elif choice == "4":
-            _generate_report(db)
-        elif choice == "5":
-            _print_sessions(db)
         elif choice == "6":
+            _generate_report(db)
+        elif choice == "7":
+            _print_sessions(db)
+        elif choice == "8":
             console.print("Exiting DeepRecon.")
             break
 

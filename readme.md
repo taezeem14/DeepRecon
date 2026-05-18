@@ -2,13 +2,15 @@
    <h1>🕵️‍♂️ DeepRecon</h1>
    <a href="https://github.com/taezeem14/DeepRecon"><img alt="Python" src="https://img.shields.io/badge/Python-3.13+-blue.svg"></a>
    <a href="https://github.com/taezeem14/DeepRecon"><img alt="License" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
+   <a href="https://github.com/taezeem14/DeepRecon"><img alt="Docker" src="https://img.shields.io/badge/Docker-Ready-blue.svg"></a>
+   <a href="https://github.com/taezeem14/DeepRecon"><img alt="AI" src="https://img.shields.io/badge/AI-Ollama%20Integrated-magenta.svg"></a>
    <a href="https://github.com/taezeem14/DeepRecon"><img alt="DB" src="https://img.shields.io/badge/Storage-SQLite%20FTS5-cyan.svg"></a>
    <a href="https://github.com/taezeem14/DeepRecon"><img alt="Tor" src="https://img.shields.io/badge/Routing-Tor-purple.svg"></a>
 
-   <p><b>DeepRecon is an advanced, fully asynchronous framework for conducting dark web OSINT investigations on the Tor (.onion) network.</b></p>
-   <p>It leverages robust scraping heuristics, auto-scaling crawlers, and automated tech-stack fingerprinting to map and investigate hidden services effortlessly.</p>
+   <p><b>DeepRecon is an advanced, AI-powered framework for conducting automated dark web OSINT investigations on the Tor (.onion) network.</b></p>
+   <p>It leverages Multi-Engine Meta-Searches, Local LLMs (Ollama) to refine and summarize findings, auto-scaling SOCKS5 crawlers, and automated tech-stack fingerprinting to map hidden services effortlessly.</p>
    
-   <p><a href="#features">Features</a> • <a href="#installation">Installation</a> • <a href="#usage">Usage</a> • <a href="#architecture">Architecture</a> • <a href="#disclaimer">Disclaimer</a></p>
+   <p><a href="#features">Features</a> • <a href="#installation">Installation</a> • <a href="#usage">Usage</a> • <a href="#architecture">Architecture</a> • <a href="#acknowledgements">Acknowledgements</a></p>
 </div>
 
 <br>
@@ -20,18 +22,15 @@
 
 ## ✨ Features
 
-- 🏎️ **Ludicrous Speed (Async SOCKS5)** – Built entirely around `aiohttp` and `asyncio`, utilizing non-blocking connection scaling to blitz through nodes.
+- 🧠 **AI Investigation Analysis** – Deeply integrated with local LLMs (via Ollama) to automatically digest, summarize, and contextualize dark web domains and scraped payloads.
+- 🧅 **Global Dark-Web Metasearch Engine** – Directly query a dozen curated Dark Web Search Engines asynchronously (Ahmia, OnionLand, Torch, etc.) to discover hidden services *before* dispatching crawlers.
+- 🏎️ **Ludicrous Speed (Async SOCKS5)** – Built entirely around `aiohttp` and `asyncio`, utilizing non-blocking connection scaling to blitz through nodes exponentially faster than threaded alternatives.
+- 🐳 **Docker-Ready Deployments** – Spin up the environment entirely isolated through Docker Compose.
 - ⚙️ **Modular Architecture** – Clean separation between the engine, extraction rules, and storage workflows, allowing instant extensibility.
 - 🌐 **Web UI** – A local FastAPI/Tailwind-based interactive dashboard for seamless investigations without terminal clutter.
-- 💻 **Elite Terminal CLI** – Beautiful `rich`-powered interactive non-ending loops, live progress spinners, colored data tables, and regex-powered sub-searches natively from the terminal.
-- 🔍 **Full-Text Search (FTS5)** – Blazing fast storage utilizing SQLite FTS5 index engines for gigabytes of HTML parsing logic, circumventing Trigger-Corruption.
-- 🤖 **Auto-Extraction Plugins** – Dynamically loadable artifact extractors. Ships with out-of-the-box support for:
-   - 🪙 `crypto_detector`: Bitcoin (BTC) / Monero (XMR) sniffer.
-   - 📩 `email_extractor`: Heavy email standardizer.
-   - 🏗️ `fingerprinter`: Detects Tech-Stacks (WordPress, React, Cloudflare, etc.).
-   - 🔑 `pgp_harvester`: Automatically pulls PGP keys.
-   - 🗺️ `language_detector`: NLP language identification.
-- 📝 **Automated Custom Reporting** – Exports investigations to interactive HTML, raw JSON, and beautiful PDF structures instantly.
+- 💻 **Elite Terminal CLI** – Beautiful `rich`-powered interactive non-ending loops natively from the terminal.
+- 🔍 **Full-Text Search (FTS5)** – Blazing fast storage utilizing SQLite FTS5 index engines for gigabytes of HTML parsing logic.
+- 🤖 **Auto-Extraction Plugins** – Dynamically loadable artifact extractors (BTC sniffing, Fingerprinting, NLP).
 
 ---
 
@@ -59,7 +58,14 @@ DeepRecon removes monolithic messes. The ecosystem is fully decoupled for instan
 ## 💾 Installation
 
 DeepRecon packages an auto-installation script that provisions required system binaries, handles Tor network installation, and globally registers the `deeprecon` terminal binary to your path.
+### Docker [Recommended]
 
+Avoid installing local binaries by pulling up the pre-configured DeepRecon Docker instance:
+
+```bash
+docker-compose up --build -d
+```
+All databases and reports will persist natively to your local `./storage` and `./reports` directories.
 ### Linux / Debian / Kali
 
 Run the installation script to configure Python virtual environments, pip, and Tor:
@@ -118,6 +124,12 @@ Contributions are fundamentally vital to open-source OSINT development! Please f
 
 ---
 
-## 📝 License
+## � Acknowledgements
+
+Special shoutout and credit to **[Apurv Singh Gautam](https://github.com/apurvsinghgautam)** and his project **[Robin](https://github.com/apurvsinghgautam/robin)**. DeepRecon's AI integration layer, Dark Web Meta-Search structure, and beautiful README aesthetics were heavily inspired by Robin. Highly recommend checking out his implementations of OSINT tooling!
+
+---
+
+## �📝 License
 
 Distributed under the MIT License. See `LICENSE` for more information.
