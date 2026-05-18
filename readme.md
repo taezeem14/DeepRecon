@@ -29,6 +29,26 @@ Security Pros: It’s the modular Swiss Army Knife you wish you had yesterday.
 
 ---
 
+## ✨ Features Array (No Cap)
+
+We packed this framework with everything you need for passive recon:
+
+- 🕸️ **Local Web Dashboard**: A dark-mode FastAPI + TailwindCSS frontend. Trigger async background scans and explore FTS5 databases without ever touching the terminal.
+- 💻 **Elite Terminal CLI**: Built with `rich`. Features continuous interactive loops, live progress spinners, colored data tables, and regex-powered sub-searches.
+- 🧅 **Native Tor Integration**: Built-in SOCKS5 proxy handling, automatic Tor IP identity renewal, and connection validation (`tor_manager.py`).
+- 💿 **Bulletproof Storage Engine**: Upgraded SQLite architecture utilizing Full-Text Search (FTS5). Features atomic delete-and-reinsert page updates to prevent the infamous "database malformed" trigger corruption.
+- 🧩 **Auto-loading Plugin Extractor**: Drop scripts in `/plugins` and it automatically runs them on scraped HTML. Ships out-of-the-box with:
+  - `crypto_detector.py`: Sniffs out Bitcoin (BTC) and Monero (XMR) addresses.
+  - `email_extractor.py`: Aggressively parses and standardizes email artifacts.
+  - `fingerprinter.py`: Regex-based tech stack fingerprinting (WordPress, React, PHP, Nginx, Apache, MySQL, etc.).
+  - `pgp_harvester.py`: Automatically unearths hidden PGP Public Keys.
+  - `language_detector.py`: Uses NLP to detect the primary language of hidden service content.
+- 🕷️ **Asynchronous Spider**: `aiohttp` non-blocking architecture natively doing Breadth-First Search (BFS) with strict duplicate avoidance.
+- 📊 **Automated Reporting**: Export entire reconnaissance sessions to HTML, JSON, and PDF (powered by WeasyPrint).
+- ⚡ **Global Binary Setup**: `install.bat` and `install.sh` don't just pip install; they provision Tor and bind `deeprecon` to your global `PATH`.
+
+---
+
 ## ⚙️ The "It Just Works" Installation
 
 We built scripts because configuring environments shouldn't be a hurdle. **It auto-installs Tor, Python dependencies, and virtual environments.**
