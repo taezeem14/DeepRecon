@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search - DeepRecon Web UI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-gray-200 p-8 font-sans">
+    <div class="max-w-4xl mx-auto">
+        <header class="mb-8 border-b border-gray-700 pb-4 flex justify-between items-end">
+            <div>
+                <h1 class="text-3xl font-bold text-cyan-400">DeepRecon Search</h1>
+            </div>
+            <div>
+                <a href="/" class="text-cyan-400 hover:text-cyan-300">🏠 Back to Dashboard</a>
+            </div>
+        </header>
+
+        <div class="bg-gray-800 p-6 rounded-lg shadow-lg mb-8">
+            <form action="/search" method="get" class="flex gap-4">
+                <input type="text" name="q" value="{{ query }}" placeholder="Search indexed pages..." class="flex-grow bg-gray-700 border border-gray-600 rounded p-3 text-white focus:outline-none focus:border-cyan-500 text-lg">
+                <button type="submit" class="bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-6 rounded transition">
+                    Search
+                </button>
+            </form>
+        </div>
+
+        {% if query %}
+            <div class="mb-4 text-gray-400">
+                Found {{ results|length }} results for "<span class="text-white">{{ query }}</span>"
+            </div>
+            
+            <div class="space-y-4">
+                {% for row in results %}
+                <div class="bg-gray-800 p-5 rounded-lg border border-gray-700">
+                    <h3 class="text-xl font-semibold mb-1 text-cyan-300">{{ row.title or "Untitled Page" }}</h3>
+                    <a href="{{ row.url }}" target="_blank" class="text-sm text-gray-400 hover:text-white break-all mb-3 inline-block">
+                        {{ row.url }}
+                    </a>
+                    
+                    <div class="flex gap-4 text-sm text-gray-500 mt-2">
+                        <span>Score: {{ row.relevance_score|round(2) }}</span>
+                        {% if row.language %}
+                        <span>Lang: {{ row.language }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% else %}
+                <div class="text-center p-8 text-gray-500">
+                    No results found. Expand your search or run a new scan.
+                </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

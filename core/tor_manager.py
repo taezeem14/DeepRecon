@@ -1,4 +1,8 @@
-import requests
+"""Compatibility wrapper that exposes Tor helpers from utils."""
+
+from utils.tor_manager import TorManager, get_session, renew_ip
+
+__all__ = ["TorManager", "get_session", "renew_ip"]import requests
 from stem import Signal
 from stem.control import Controller
 from config import TOR_SOCKS_PROXY, TOR_CONTROL_PORT, TOR_CONTROL_PASSWORD

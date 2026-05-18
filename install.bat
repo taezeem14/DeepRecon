@@ -1,22 +1,31 @@
 @echo off
-echo 🚀 Installing DeepRecon dependencies on Windows...
+setlocal enabledelayedexpansion
 
-:: Check Python
-python --version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo ❌ Python is not installed. Please install Python 3.x and rerun this script.
+echo Installing DeepRecon dependencies on Windows...
+
+where py >nul 2>&1
+if errorlevel 1 (
+    echo Python launcher not found. Install Python 3.x first.
     pause
-    exit /b
+    exit /b 1
 )
 
-:: Install requirements
-pip install -r requirements.txt
+py -3 -m pip install --upgrade pip
+py -3 -m pip install -r requirements.txt
 
-:: Tor installation note
-echo 🔍 Please download Tor Expert Bundle from:
+echo.
+echo Install the Tor Expert Bundle separately:
 echo https://www.torproject.org/download/tor/
-echo Extract and run: tor.exe
+echo Then run tor.exe before starting DeepRecon.
+echo.
 
-echo ✅ Installation complete!
-echo Run the tool with: python main.py
+echo Creating deeprecon.bat wrapper...
+(
+echo @echo off
+echo py -3 "%~dp0main.py" %%*
+) > deeprecon.bat
+
+echo Installation complete.
+echo You can run the tool by calling: deeprecon --cli OR deeprecon --web
+echo (Make sure this directory is in your PATH to call it from anywhere)
 pause

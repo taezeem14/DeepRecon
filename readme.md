@@ -1,136 +1,97 @@
-# 🕵️ DeepRecon - Dark Web OSINT & Recon Tool
+<div align="center">
 
-DeepRecon is a **Dark Web OSINT framework** that allows security researchers to crawl `.onion` websites via the Tor network, perform keyword-based searches, collect intelligence, and generate reports.
-It is designed for **ethical hacking, threat intelligence, and research purposes**.
+# 🕵️‍♂️ DeepRecon
+
+**The no-cap next-gen Dark Web OSINT engine that runs on literal ✨magic✨.**  
+*But seriously, it’s a fully asynchronous, modular, and auto-scaling reconnaissance framework built for security researchers who actually want results without the headache.*
+
+[![Python 3.13+](https://img.shields.io/badge/Python-3.13+-blue.svg)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Powered by sqlite](https://img.shields.io/badge/Powered_by-SQLite%20FTS5-cyan.svg)](https://sqlite.org/)
+[![Routing: Tor](https://img.shields.io/badge/Routing-Tor-purple.svg)](https://www.torproject.org/)
+[![UI: Rich & FastAPI](https://img.shields.io/badge/UI-Rich_%7C_FastAPI-green.svg)](-)
+
+</div>
 
 ---
 
-## 📌 Features
+## 🚀 Wait, What is DeepRecon?
 
-✔ Crawl `.onion` websites through **Tor proxy**
-✔ Perform **keyword searches** in crawled data
-✔ **Auto-renew Tor IP** for anonymity
-✔ Generate **HTML-based reports**
-✔ Works on **Windows, Linux, and Kali Live USB**
-✔ Modular structure for easy expansion
+Stop running 5 different scripts manually. DeepRecon is a fully automated engine designed to map, index, and fingerprint target nodes inside the Tor network (.onion). 
+We're talking: 
+- 🏎️ **Ludicrous Speed**: Non-blocking iohttp SOCKS5 connections.
+- 🧠 **Smart Crawling**: BFS traversal with duplicate-link avoidance and resilient memory caching.
+- 🔍 **Full Text Search (FTS5)**: Finding what you need across gigabytes of indexed content instantly. 
+- 🤖 **Auto-Extraction**: Regular Expressions? Nah, we dynamically scrape PGP keys, Cryptocoin Wallets (BTC, XMR), emails, tech-stack footprints (ingerprinter), and language data effortlessly.
+- 💅 **Web & CLI Drip**: An interactive Rich-powered CLI or a sleek FastAPI-driven Dashboard. You pick.
+
+Security Pros: It’s the modular Swiss Army Knife you wish you had yesterday.
 
 ---
 
-## 🛠 Installation
+## ⚙️ The "It Just Works" Installation
 
-### 1. Clone the Repository
+We built scripts because configuring environments shouldn't be a hurdle. **It auto-installs Tor, Python dependencies, and virtual environments.**
 
-```bash
-git clone https://github.com/taezeem14/DeepRecon.git
-cd DeepRecon
-```
-
-### 2. Install Dependencies
-
-**Linux / Kali:**
-
-```bash
-chmod +x install.sh
+### 🐧 Linux/Debian/Kali user?
+`ash
 ./install.sh
-```
+`
 
-**Windows (PowerShell):**
-
-```powershell
+### 🪟 Windows?
+`cmd
 install.bat
-```
+`
 
-Or manually:
+> **Expert mode unlocked:** During install, we bind deeprecon directly to your path so you can call it locally from anywhere. 
 
-```bash
+*(Manual path)*
+`ash
 pip install -r requirements.txt
-```
-
-### 3. Install and Configure Tor
-
-DeepRecon requires **Tor service** running on your system for `.onion` access.
-
-#### **Linux / Kali**
-
-```bash
-sudo apt update && sudo apt install tor -y
-sudo service tor start
-```
-
-Default Tor SOCKS proxy: `127.0.0.1:9050`
-
-#### **Windows**
-
-1. Download **Tor Expert Bundle** from [https://www.torproject.org/download/tor/](https://www.torproject.org/download/tor/)
-2. Extract it and run:
-
-```powershell
-tor.exe
-```
-
-#### **Verify Tor**
-
-```bash
-curl --socks5 127.0.0.1:9050 https://check.torproject.org/
-```
+# Ensure Tor daemon is running!
+`
 
 ---
 
-## ▶ Usage
+## 🎮 How to Wield It
 
-Run the tool:
+Run the framework. Period.
 
-```bash
-python main.py
-```
+### 🌐 Web Interface Mode
+Launch the local web dashboard for point-and-click intelligence gathering:
+`ash
+deeprecon --web --port 8000
+`
+Open http://localhost:8000 to start scanning and exploring your database.
 
-### **Menu Options**
-
-```
-[1] Crawl Onion Site   → Crawl and extract links from a .onion site
-[2] Keyword Search     → Search for keywords in crawled data
-[3] Renew Tor IP       → Change Tor circuit for anonymity
-[4] Generate Report    → Export results as an HTML report
-[5] Exit               → Quit the tool
-```
-
----
-
-## 📂 Project Structure
-
-```
-DeepRecon/
-├── core/            # Core logic (crawlers, parsers)
-├── storage/         # Stores crawled data and reports
-├── utils/           # Helper functions (e.g., Tor IP renew)
-├── config.py        # Configuration (Tor settings, proxies)
-├── main.py          # Entry point
-├── requirements.txt # Dependencies
-├── install.sh       # Linux/Kali auto installer
-├── install.bat      # Windows installer
-└── README.md
-```
+### 💻 Elite CLI Mode
+Stay in the terminal with our non-ending interactive loops:
+`ash
+deeprecon --cli
+`
+*What happens next?* The loop walks you through adding targets, kicking off asynchronous spiders, or searching your datasets on the fly. 
 
 ---
 
-## ⚡ Example Commands
+## 🏗️ Architecture & Extensibility
 
-```bash
-# Crawl a .onion site
-python main.py
-# Choose option 1 and enter .onion URL
+We hate monolithic messes. Inside, you'll find:
 
-# Search for keyword
-python main.py
-# Choose option 2 and enter keyword
-```
+- **core/**: The asynchronous heart pumping bytes (crawler.py, parser.py).
+- **plugins/**: Drop a new .py file inheriting BasePlugin here, and DeepRecon auto-detects it. Boom, new feature deployed.
+- **storage/**: Safe, trigger-bypassing FTS5 SQLite row-replacement that refuses to corrupt.
+- **web/ & main.py**: The dynamic frontends masking the sheer complexity behind the scenes.
 
----
-
-## ⚠ Disclaimer
-
-This tool is intended for **educational and research purposes only**.
-The author is **not responsible for any misuse** of this tool.
+**Need a custom parser?** Just copy plugins/fingerprinter.py, adjust the signatures, and you're parsing new artifacts.
 
 ---
 
+## 🔒 OpSec Warning
+
+This tool is built for **Ethical Security Research**. Interacting with .onion addresses inherently carries risk. DeepRecon masks user-agents and dynamically routes traffic, but it relies on your configured OPSEC rules. **Never operate without Tor running correctly.** Stay safe, fam. 
+
+---
+
+## 📝 License
+
+Licensed under the MIT License. See [LICENSE](LICENSE) for details.

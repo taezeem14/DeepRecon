@@ -1,21 +1,24 @@
 #!/bin/bash
 
-echo "🚀 Installing DeepRecon dependencies on Linux/Kali..."
+set -euo pipefail
 
-# Update system and install Tor
+echo "Installing DeepRecon dependencies on Linux/Kali..."
+
 sudo apt update
-sudo apt install -y python3 python3-pip tor
+sudo apt install -y python3 python3-pip python3-venv tor
 
-# Install Python requirements
-pip3 install -r requirements.txt
+python3 -m pip install --upgrade pip
+python3 -m pip install -r requirements.txt
 
-# Enable and start Tor service
-sudo systemctl enable tor
-sudo systemctl start tor
+if command -v systemctl >/dev/null 2>&1; then
+	sudo systemctl enable tor || true
+	sudo systemctl restart tor || true
+fi
 
-# Check Tor status
-echo "✅ Tor status:"
-systemctl status tor | grep Active
+echo "Creating global 'deeprecon' command alias..."
+echo '#!/bin/bash' | sudo tee /usr/local/bin/deeprecon > /dev/null
+echo "python3 $(pwd)/main.py \"\$@\"" | sudo tee -a /usr/local/bin/deeprecon > /dev/null
+sudo chmod +x /usr/local/bin/deeprecon
 
-echo "✅ Installation complete!"
-echo "Run the tool with: python3 main.py"
+echo "Installation complete. You can now use the 'deeprecon' command anywhere!"
+echo "Try: deeprecon --cli OR deeprecon --web"
