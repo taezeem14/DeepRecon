@@ -1,117 +1,123 @@
 <div align="center">
+   <h1>🕵️‍♂️ DeepRecon</h1>
+   <a href="https://github.com/taezeem14/DeepRecon"><img alt="Python" src="https://img.shields.io/badge/Python-3.13+-blue.svg"></a>
+   <a href="https://github.com/taezeem14/DeepRecon"><img alt="License" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
+   <a href="https://github.com/taezeem14/DeepRecon"><img alt="DB" src="https://img.shields.io/badge/Storage-SQLite%20FTS5-cyan.svg"></a>
+   <a href="https://github.com/taezeem14/DeepRecon"><img alt="Tor" src="https://img.shields.io/badge/Routing-Tor-purple.svg"></a>
 
-# 🕵️‍♂️ DeepRecon
-
-**The no-cap next-gen Dark Web OSINT engine that runs on literal ✨magic✨.**  
-*But seriously, it’s a fully asynchronous, modular, and auto-scaling reconnaissance framework built for security researchers who actually want results without the headache.*
-
-[![Python 3.13+](https://img.shields.io/badge/Python-3.13+-blue.svg)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Powered by sqlite](https://img.shields.io/badge/Powered_by-SQLite%20FTS5-cyan.svg)](https://sqlite.org/)
-[![Routing: Tor](https://img.shields.io/badge/Routing-Tor-purple.svg)](https://www.torproject.org/)
-[![UI: Rich & FastAPI](https://img.shields.io/badge/UI-Rich_%7C_FastAPI-green.svg)](-)
-
+   <p><b>DeepRecon is an advanced, fully asynchronous framework for conducting dark web OSINT investigations on the Tor (.onion) network.</b></p>
+   <p>It leverages robust scraping heuristics, auto-scaling crawlers, and automated tech-stack fingerprinting to map and investigate hidden services effortlessly.</p>
+   
+   <p><a href="#features">Features</a> • <a href="#installation">Installation</a> • <a href="#usage">Usage</a> • <a href="#architecture">Architecture</a> • <a href="#disclaimer">Disclaimer</a></p>
 </div>
 
----
+<br>
 
-## 🚀 Wait, What is DeepRecon?
-
-Stop running 5 different scripts manually. DeepRecon is a fully automated engine designed to map, index, and fingerprint target nodes inside the Tor network (`.onion`). 
-We're talking: 
-- 🏎️ **Ludicrous Speed**: Non-blocking `aiohttp` SOCKS5 connections.
-- 🧠 **Smart Crawling**: BFS traversal with duplicate-link avoidance and resilient memory caching.
-- 🔍 **Full Text Search (FTS5)**: Finding what you need across gigabytes of indexed content instantly. 
-- 🤖 **Auto-Extraction**: Regular Expressions? Nah, we dynamically scrape PGP keys, Cryptocoin Wallets (BTC, XMR), emails, tech-stack footprints (`fingerprinter`), and language data effortlessly.
-- 💅 **Web & CLI Drip**: An interactive Rich-powered CLI or a sleek FastAPI-driven Dashboard. You pick.
-
-Security Pros: It’s the modular Swiss Army Knife you wish you had yesterday.
+> [!NOTE]
+> DeepRecon requires a native Tor service to route traffic through the anonymity network safely. Ensure your Tor daemon is active before kicking off crawls.
 
 ---
 
-## ✨ Features Array (No Cap)
+## ✨ Features
 
-We packed this framework with everything you need for passive recon:
-
-- 🕸️ **Local Web Dashboard**: A dark-mode FastAPI + TailwindCSS frontend. Trigger async background scans and explore FTS5 databases without ever touching the terminal.
-- 💻 **Elite Terminal CLI**: Built with `rich`. Features continuous interactive loops, live progress spinners, colored data tables, and regex-powered sub-searches.
-- 🧅 **Native Tor Integration**: Built-in SOCKS5 proxy handling, automatic Tor IP identity renewal, and connection validation (`tor_manager.py`).
-- 💿 **Bulletproof Storage Engine**: Upgraded SQLite architecture utilizing Full-Text Search (FTS5). Features atomic delete-and-reinsert page updates to prevent the infamous "database malformed" trigger corruption.
-- 🧩 **Auto-loading Plugin Extractor**: Drop scripts in `/plugins` and it automatically runs them on scraped HTML. Ships out-of-the-box with:
-  - `crypto_detector.py`: Sniffs out Bitcoin (BTC) and Monero (XMR) addresses.
-  - `email_extractor.py`: Aggressively parses and standardizes email artifacts.
-  - `fingerprinter.py`: Regex-based tech stack fingerprinting (WordPress, React, PHP, Nginx, Apache, MySQL, etc.).
-  - `pgp_harvester.py`: Automatically unearths hidden PGP Public Keys.
-  - `language_detector.py`: Uses NLP to detect the primary language of hidden service content.
-- 🕷️ **Asynchronous Spider**: `aiohttp` non-blocking architecture natively doing Breadth-First Search (BFS) with strict duplicate avoidance.
-- 📊 **Automated Reporting**: Export entire reconnaissance sessions to HTML, JSON, and PDF (powered by WeasyPrint).
-- ⚡ **Global Binary Setup**: `install.bat` and `install.sh` don't just pip install; they provision Tor and bind `deeprecon` to your global `PATH`.
+- 🏎️ **Ludicrous Speed (Async SOCKS5)** – Built entirely around `aiohttp` and `asyncio`, utilizing non-blocking connection scaling to blitz through nodes.
+- ⚙️ **Modular Architecture** – Clean separation between the engine, extraction rules, and storage workflows, allowing instant extensibility.
+- 🌐 **Web UI** – A local FastAPI/Tailwind-based interactive dashboard for seamless investigations without terminal clutter.
+- 💻 **Elite Terminal CLI** – Beautiful `rich`-powered interactive non-ending loops, live progress spinners, colored data tables, and regex-powered sub-searches natively from the terminal.
+- 🔍 **Full-Text Search (FTS5)** – Blazing fast storage utilizing SQLite FTS5 index engines for gigabytes of HTML parsing logic, circumventing Trigger-Corruption.
+- 🤖 **Auto-Extraction Plugins** – Dynamically loadable artifact extractors. Ships with out-of-the-box support for:
+   - 🪙 `crypto_detector`: Bitcoin (BTC) / Monero (XMR) sniffer.
+   - 📩 `email_extractor`: Heavy email standardizer.
+   - 🏗️ `fingerprinter`: Detects Tech-Stacks (WordPress, React, Cloudflare, etc.).
+   - 🔑 `pgp_harvester`: Automatically pulls PGP keys.
+   - 🗺️ `language_detector`: NLP language identification.
+- 📝 **Automated Custom Reporting** – Exports investigations to interactive HTML, raw JSON, and beautiful PDF structures instantly.
 
 ---
 
-## ⚙️ The "It Just Works" Installation
+## 🏗️ Architecture
 
-We built scripts because configuring environments shouldn't be a hurdle. **It auto-installs Tor, Python dependencies, and virtual environments.**
+DeepRecon removes monolithic messes. The ecosystem is fully decoupled for instant upgrades:
 
-### 🐧 Linux/Debian/Kali user?
+- **`core/`**: The heavy-lifting crawler and HTML parser logic (`crawler.py`). Features resilient memory caching and Breadth-First Traversal (BFS) duplicate avoidance.
+- **`plugins/`**: Extractor engines (`BasePlugin`). Drop a custom script here, and the framework automatically consumes it. No manual configs needed.
+- **`storage/`**: Atomic-replacement SQLite engines handling Full-Text Search and relational nodes seamlessly.
+- **`web/` & `main.py`**: Fast frontends acting as proxies to the background logic.
+
+---
+
+## ⚠️ Disclaimer
+
+> [!WARNING]
+> This tool is intended for **educational and lawful ethical security research purposes only**. Accessing or interacting with certain hidden services on the dark web may be heavily regulated or illegal depending on your jurisdiction. The author and contributors hold no liability for misuse of this tool or the intelligence gathered with it.
+>
+> We strongly advise enforcing robust OPSEC hygiene, utilizing dedicated sandbox environments alongside proper proxy configurations.
+> Use responsibly and at your absolute own risk.
+
+---
+
+## 💾 Installation
+
+DeepRecon packages an auto-installation script that provisions required system binaries, handles Tor network installation, and globally registers the `deeprecon` terminal binary to your path.
+
+### Linux / Debian / Kali
+
+Run the installation script to configure Python virtual environments, pip, and Tor:
+
 ```bash
+git clone https://github.com/taezeem14/DeepRecon.git
+cd DeepRecon
+chmod +x install.sh
 ./install.sh
 ```
 
-### 🪟 Windows?
+### Windows
+
+Run the batch configuration:
+
 ```cmd
+git clone https://github.com/taezeem14/DeepRecon.git
+cd DeepRecon
 install.bat
 ```
 
-> **Expert mode unlocked:** During install, we bind `deeprecon` directly to your path so you can call it locally from anywhere. 
-
-*(Manual path)*
-```bash
-pip install -r requirements.txt
-# Ensure Tor daemon is running!
-```
+> [!TIP]
+> **Windows Users**: You will need to manually download and let the [Tor Expert Bundle](https://www.torproject.org/download/tor/) run in the background on port `9050` before performing reconnaissance.
 
 ---
 
-## 🎮 How to Wield It
+## 🎮 Usage
 
-Run the framework. Period.
+DeepRecon supports both interactive CLI scraping and a point-and-click browser interface.
 
 ### 🌐 Web Interface Mode
-Launch the local web dashboard for point-and-click intelligence gathering:
+Launch the local web dashboard for intuitive intelligence gathering:
 ```bash
 deeprecon --web --port 8000
 ```
-Open `http://localhost:8000` to start scanning and exploring your database.
+*Navigate to `http://localhost:8000` to start your asynchronous intelligence pipelines.*
 
 ### 💻 Elite CLI Mode
-Stay in the terminal with our non-ending interactive loops:
+Stay native in the terminal. Launch the interactive framework:
 ```bash
 deeprecon --cli
 ```
-*What happens next?* The loop walks you through adding targets, kicking off asynchronous spiders, or searching your datasets on the fly. 
+*Follow the interactive rich-loops for executing deep-crawls, exporting PDFs, and searching target domains against Regex statements.*
 
 ---
 
-## 🏗️ Architecture & Extensibility
+## 🤝 Contributing
 
-We hate monolithic messes. Inside, you'll find:
+Contributions are fundamentally vital to open-source OSINT development! Please feel free to submit Pull Requests to improve the engine.
 
-- **`core/`**: The asynchronous heart pumping bytes (`crawler.py`, `parser.py`).
-- **`plugins/`**: Drop a new `.py` file inheriting `BasePlugin` here, and DeepRecon auto-detects it. Boom, new feature deployed.
-- **`storage/`**: Safe, trigger-bypassing FTS5 SQLite row-replacement that refuses to corrupt.
-- **`web/` & `main.py`**: The dynamic frontends masking the sheer complexity behind the scenes.
-
-**Need a custom parser?** Just copy `plugins/fingerprinter.py`, adjust the signatures, and you're parsing new artifacts.
-
----
-
-## 🔒 OpSec Warning
-
-This tool is built for **Ethical Security Research**. Interacting with `.onion` addresses inherently carries risk. DeepRecon masks user-agents and dynamically routes traffic, but it relies on your configured OPSEC rules. **Never operate without Tor running correctly.** Stay safe, fam. 
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/NewPlugin`)
+3. Commit your Changes (`git commit -m 'Add some NewPlugin'`)
+4. Push to the Branch (`git push origin feature/NewPlugin`)
+5. Open a Pull Request
 
 ---
 
 ## 📝 License
 
-Licensed under the MIT License. See [LICENSE](LICENSE) for details.
+Distributed under the MIT License. See `LICENSE` for more information.
