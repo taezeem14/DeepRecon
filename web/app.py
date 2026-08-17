@@ -67,6 +67,7 @@ def _crawl_background_job(
     """Execute background crawl with configured crawler parameters."""
     crawler = AsyncCrawler(
         db=db,
+        session_id=session_id,
         depth=depth,
         workers=workers,
         delay=delay,
@@ -77,9 +78,14 @@ def _crawl_background_job(
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
-        loop.run_until_complete(crawler.crawl(seed_urls))
+        results = loop.run_until_complete(crawler.crawl(seed_urls))
+        LOGGER.info("Crawl completed for session %d: %d pages found", session_id, len(results))
+        with db._connect() as conn:
+            conn.execute("UPDATE sessions SET status = 'completed' WHERE id = ?", (session_id,))
     except Exception as exc:
         LOGGER.error("Crawl error in background job: %s", exc)
+        with db._connect() as conn:
+            conn.execute("UPDATE sessions SET status = 'failed' WHERE id = ?", (session_id,))
     finally:
         loop.close()
 

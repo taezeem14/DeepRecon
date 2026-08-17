@@ -1308,6 +1308,7 @@
                     showToast(`Recon swarm deployed for session #${data.session_id}!`, '<i class="fa-solid fa-paper-plane"></i>');
                     logTerminal(`[SUCCESS] Crawl initiated! Session ID: ${data.session_id} (${data.session_name})`);
                     refreshSystemData();
+                    pollCrawlStatus(data.session_id);
                 } else {
                     showToast(data.detail || 'Failed to dispatch scan', '<i class="fa-solid fa-xmark"></i>');
                     logTerminal(`[ERROR] Dispatch failed: ${data.detail}`);
@@ -1319,6 +1320,30 @@
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Dispatch SOCKS5 Crawler Swarm';
             }
+        }
+
+        function pollCrawlStatus(sessionId) {
+            const interval = setInterval(async () => {
+                try {
+                    const resp = await fetch(`/api/sessions/${sessionId}`);
+                    const data = await resp.json();
+                    const session = data.session;
+                    const pageCount = data.pages ? data.pages.length : 0;
+                    logTerminal(`[CRAWL] Session #${sessionId}: ${session.status} — ${pageCount} pages indexed so far`);
+                    
+                    if (session.status === 'completed' || session.status === 'failed') {
+                        clearInterval(interval);
+                        if (session.status === 'completed') {
+                            showToast(`Crawl complete! ${pageCount} pages indexed.`, '<i class="fa-solid fa-check-double"></i>');
+                        } else {
+                            showToast('Crawl failed — check if target is reachable', '<i class="fa-solid fa-triangle-exclamation"></i>');
+                        }
+                        refreshSystemData();
+                    }
+                } catch (err) {
+                    clearInterval(interval);
+                }
+            }, 3000);
         }
 
         // Rotate Tor Circuit

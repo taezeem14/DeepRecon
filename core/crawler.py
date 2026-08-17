@@ -66,6 +66,7 @@ class AsyncCrawler:
         self,
         db: DeepReconDB | None = None,
         *,
+        session_id: int | None = None,
         depth: int = CRAWL_DEPTH,
         workers: int = CRAWL_WORKERS,
         delay: float = CRAWL_DELAY,
@@ -75,6 +76,7 @@ class AsyncCrawler:
         max_retries: int = MAX_RETRIES,
     ) -> None:
         self.db = db or DeepReconDB()
+        self.session_id = session_id
         self.depth = max(0, depth)
         self.workers = max(1, workers)
         self.delay = max(0.0, delay)
@@ -90,9 +92,14 @@ class AsyncCrawler:
         if aiohttp is None:
             raise RuntimeError("aiohttp is required for AsyncCrawler")
 
+        # Only use SOCKS5 proxy for .onion targets; clearnet URLs use direct connection
         connector = None
-        if self.proxy_url and ProxyConnector is not None:
+        has_onion = any('.onion' in seed.lower() for seed in seeds)
+        if has_onion and self.proxy_url and ProxyConnector is not None:
             connector = ProxyConnector.from_url(self.proxy_url)
+        elif has_onion and ProxyConnector is None:
+            LOGGER.error("aiohttp_socks not installed; cannot crawl .onion URLs")
+            return []
 
         timeout = aiohttp.ClientTimeout(total=self.timeout)
         visited: set[str] = set()
@@ -171,6 +178,7 @@ class AsyncCrawler:
         site_id = self.db.get_or_create_site(site_root, page.title)
         page_id = self.db.upsert_page(
             Page(
+                session_id=self.session_id,
                 site_id=site_id,
                 url=page.url,
                 final_url=page.final_url,
