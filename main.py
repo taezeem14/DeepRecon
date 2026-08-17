@@ -5,6 +5,14 @@ from __future__ import annotations
 import argparse
 import sys
 
+# Ensure UTF-8 output encoding on Windows consoles to prevent charmap UnicodeEncodeError
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except Exception:
+        pass
+
 from rich.console import Console
 
 from config import DB_PATH
@@ -14,7 +22,7 @@ from utils.banner import banner
 from utils.logger import configure_logging
 from utils.tor_manager import TorManager
 
-console = Console()
+console = Console(highlight=False)
 
 
 def main() -> None:
@@ -40,7 +48,7 @@ def main() -> None:
     configure_logging()
 
     if args.web:
-        console.print(f"\n[bold green]🚀 Launching DeepRecon Cyber Command Web UI at http://{args.host}:{args.port}[/bold green]")
+        console.print(f"\n[bold green]Launching DeepRecon Cyber Command Web UI at http://{args.host}:{args.port}[/bold green]")
         console.print("[dim]Press Ctrl+C to stop server[/dim]\n")
         import uvicorn
         uvicorn.run("web.app:app", host=args.host, port=args.port, reload=False)
