@@ -3,15 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepRecon 🕵️‍♂️ | Cyber Command & Dark Web Intelligence</title>
+    <title>DeepRecon | Cyber Command & Dark Web Intelligence</title>
+    
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome 6.5 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <style>
         :root {
             --bg-base: #060911;
-            --bg-surface: #0d1322;
+            --bg-surface: #0c1220;
             --bg-surface-elevated: #131b2e;
-            --bg-glass: rgba(13, 19, 34, 0.85);
+            --bg-glass: rgba(12, 18, 32, 0.88);
             --border-subtle: rgba(255, 255, 255, 0.08);
             --border-highlight: rgba(0, 242, 254, 0.35);
             --accent-cyan: #00f2fe;
@@ -49,9 +55,8 @@
         ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--accent-cyan); }
 
-        /* Container Layout */
         .app-container {
-            max-width: 1400px;
+            max-width: 1440px;
             margin: 0 auto;
             padding: 24px 20px 60px;
         }
@@ -79,12 +84,13 @@
         }
 
         .brand-icon {
-            font-size: 2rem;
-            filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.4));
+            font-size: 1.8rem;
+            color: var(--accent-cyan);
+            filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.5));
         }
 
         .brand-text h1 {
-            font-size: 1.5rem;
+            font-size: 1.45rem;
             font-weight: 800;
             letter-spacing: -0.03em;
             background: linear-gradient(135deg, #00f2fe 0%, #38bdf8 50%, #a855f7 100%);
@@ -115,7 +121,7 @@
         .hud-status-group {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
@@ -211,7 +217,7 @@
             box-shadow: 0 2px 10px rgba(0, 242, 254, 0.3);
         }
 
-        /* Grid System */
+        /* KPI Cards */
         .grid-kpi {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -229,22 +235,11 @@
             overflow: hidden;
         }
 
-        .card-kpi::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
         .card-kpi:hover {
             border-color: var(--border-highlight);
             transform: translateY(-2px);
             box-shadow: var(--shadow-glow);
         }
-
-        .card-kpi:hover::before { opacity: 1; }
 
         .kpi-label {
             font-size: 0.75rem;
@@ -300,10 +295,8 @@
             gap: 10px;
         }
 
-        /* Forms & Inputs */
-        .form-group {
-            margin-bottom: 18px;
-        }
+        /* Form Elements */
+        .form-group { margin-bottom: 18px; }
 
         .form-label {
             display: block;
@@ -338,7 +331,6 @@
             margin-top: 6px;
         }
 
-        /* Recon Presets Pills */
         .preset-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
@@ -367,17 +359,8 @@
             box-shadow: 0 0 12px rgba(0, 242, 254, 0.2);
         }
 
-        .preset-name {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .preset-desc {
-            font-size: 0.7rem;
-            color: var(--text-dim);
-            margin-top: 4px;
-        }
+        .preset-name { font-size: 0.85rem; font-weight: 700; color: #fff; }
+        .preset-desc { font-size: 0.7rem; color: var(--text-dim); margin-top: 4px; }
 
         /* Buttons */
         .btn-primary {
@@ -412,6 +395,9 @@
             border: 1px solid var(--border-subtle);
             cursor: pointer;
             transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .btn-secondary:hover {
@@ -419,11 +405,8 @@
             color: var(--accent-cyan);
         }
 
-        /* Data Tables */
-        .table-responsive {
-            overflow-x: auto;
-            width: 100%;
-        }
+        /* Tables */
+        .table-responsive { overflow-x: auto; width: 100%; }
 
         table.cyber-table {
             width: 100%;
@@ -449,15 +432,13 @@
             vertical-align: middle;
         }
 
-        table.cyber-table tr:hover td {
-            background: rgba(255, 255, 255, 0.02);
-        }
+        table.cyber-table tr:hover td { background: rgba(255, 255, 255, 0.02); }
 
-        /* Badges & Tags */
+        /* Badges */
         .badge {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
             padding: 3px 10px;
             border-radius: 999px;
             font-size: 0.75rem;
@@ -487,7 +468,7 @@
         .terminal-line { margin-bottom: 4px; }
         .terminal-timestamp { color: var(--text-dim); margin-right: 8px; }
 
-        /* Threat Dossier Card */
+        /* Dossier Card */
         .dossier-card {
             background: var(--bg-base);
             border: 1px solid var(--border-highlight);
@@ -531,7 +512,6 @@
             to { transform: translateX(0); opacity: 1; }
         }
 
-        /* Two-Column Layouts */
         .layout-split {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -548,7 +528,7 @@
         <!-- Tactical Top Header -->
         <header class="tactical-header">
             <div class="brand-cluster">
-                <span class="brand-icon">🕵️‍♂️</span>
+                <i class="fa-solid fa-user-secret brand-icon"></i>
                 <div class="brand-text">
                     <h1>DeepRecon <span class="version-badge mono">v3.2.0</span></h1>
                     <p>Next-Gen Autonomous Dark Web OSINT, SOCKS5 Multiplexing & AI Threat Triage</p>
@@ -563,58 +543,65 @@
                 </div>
 
                 <button class="btn-mini-action" onclick="rotateTorCircuit()">
-                    <span>🔄</span> Rotate Tor IP
+                    <i class="fa-solid fa-rotate"></i> Rotate Tor IP
                 </button>
 
                 <div class="hud-pill">
+                    <i class="fa-solid fa-brain" style="color: var(--accent-purple);"></i>
                     <span class="text-dim">AI:</span>
                     <span class="mono" style="color: var(--accent-purple);" id="ai-provider-display">{{ ai_provider }}</span>
                 </div>
 
+                <div class="hud-pill" title="Client-side IndexedDB Active">
+                    <i class="fa-solid fa-database" style="color: var(--accent-emerald);"></i>
+                    <span class="text-dim">IndexedDB:</span>
+                    <span class="mono" style="color: var(--accent-emerald);">Ready</span>
+                </div>
+
                 <button class="btn-mini-action" onclick="refreshSystemData()">
-                    <span>⚡</span> Refresh Telemetry
+                    <i class="fa-solid fa-bolt"></i> Telemetry
                 </button>
             </div>
         </header>
 
-        <!-- Navigation Ribbon -->
+        <!-- Navigation Ribbon with FontAwesome Icons -->
         <nav class="nav-ribbon">
             <button class="nav-tab active" onclick="switchTab('mission-control')">
-                <span>🛰️</span> Mission Control
+                <i class="fa-solid fa-satellite-dish"></i> Mission Control
             </button>
             <button class="nav-tab" onclick="switchTab('metasearch')">
-                <span>🧅</span> Dark Web Meta-Search
+                <i class="fa-solid fa-spider"></i> Dark Web Meta-Search
             </button>
             <button class="nav-tab" onclick="switchTab('ai-lab')">
-                <span>🤖</span> AI Threat Intelligence
+                <i class="fa-solid fa-brain"></i> AI Threat Intelligence
             </button>
             <button class="nav-tab" onclick="switchTab('vault')">
-                <span>📁</span> Intelligence Vault
+                <i class="fa-solid fa-vault"></i> Intelligence Vault
             </button>
             <button class="nav-tab" onclick="switchTab('search')">
-                <span>🔍</span> FTS5 Fast Search
+                <i class="fa-solid fa-magnifying-glass"></i> FTS5 Fast Search
             </button>
-            <button class="nav-tab" onclick="switchTab('opsec')">
-                <span>🛡️</span> OPSEC Diagnostics
+            <button class="nav-tab" onclick="switchTab('settings')">
+                <i class="fa-solid fa-sliders"></i> AI & OPSEC Settings
             </button>
         </nav>
 
         <!-- KPI Metric Cards -->
         <div class="grid-kpi">
             <div class="card-kpi">
-                <div class="kpi-label"><span>Indexed Pages</span> <span>📄</span></div>
+                <div class="kpi-label"><span>Indexed Pages</span> <i class="fa-solid fa-file-code" style="color: var(--accent-cyan);"></i></div>
                 <div class="kpi-value mono" style="color: var(--accent-cyan);" id="kpi-pages">{{ total_pages }}</div>
             </div>
             <div class="card-kpi">
-                <div class="kpi-label"><span>Discovered Links</span> <span>🔗</span></div>
+                <div class="kpi-label"><span>Discovered Links</span> <i class="fa-solid fa-link" style="color: var(--accent-blue);"></i></div>
                 <div class="kpi-value mono" style="color: var(--accent-blue);" id="kpi-links">{{ total_links }}</div>
             </div>
             <div class="card-kpi">
-                <div class="kpi-label"><span>Harvested Artifacts</span> <span>🎯</span></div>
+                <div class="kpi-label"><span>Harvested Artifacts</span> <i class="fa-solid fa-crosshairs" style="color: var(--accent-purple);"></i></div>
                 <div class="kpi-value mono" style="color: var(--accent-purple);" id="kpi-keywords">{{ total_keywords }}</div>
             </div>
             <div class="card-kpi">
-                <div class="kpi-label"><span>Active Sessions</span> <span>📁</span></div>
+                <div class="kpi-label"><span>Active Sessions</span> <i class="fa-solid fa-folder-open" style="color: var(--accent-emerald);"></i></div>
                 <div class="kpi-value mono" style="color: var(--accent-emerald);" id="kpi-sessions">{{ sessions|length }}</div>
             </div>
         </div>
@@ -627,15 +614,15 @@
                 <!-- Recon Mission Launcher -->
                 <div class="cyber-panel">
                     <div class="panel-header">
-                        <h2 class="panel-title"><span>🎯</span> Launch Reconnaissance Mission</h2>
-                        <span class="badge badge-cyan mono">SOCKS5 Swarm</span>
+                        <h2 class="panel-title"><i class="fa-solid fa-crosshairs"></i> Launch Reconnaissance Mission</h2>
+                        <span class="badge badge-cyan mono"><i class="fa-solid fa-shield-halved"></i> SOCKS5 Swarm</span>
                     </div>
 
                     <form id="recon-form" onsubmit="handleReconSubmit(event)">
                         <div class="form-group">
                             <label class="form-label">Target URL (.onion or clearnet)</label>
                             <input type="text" id="recon-url" class="form-input mono" placeholder="http://targetxxxx.onion or https://example.com" required>
-                            <p class="input-hint">✓ SOCKS5 proxy automatically routes traffic through the Tor onion routing circuit.</p>
+                            <p class="input-hint">✓ Traffic multiplexed through Tor SOCKS5 proxy (socks5h://127.0.0.1:9050).</p>
                         </div>
 
                         <div class="form-group">
@@ -647,15 +634,15 @@
                             <label class="form-label">Recon Profile Presets</label>
                             <div class="preset-grid">
                                 <div class="preset-card" onclick="selectPreset(1, 2, 2.5, this)">
-                                    <div class="preset-name">⚡ Stealth</div>
+                                    <div class="preset-name"><i class="fa-solid fa-bolt"></i> Stealth</div>
                                     <div class="preset-desc">Depth 1 | 2 Workers</div>
                                 </div>
                                 <div class="preset-card selected" onclick="selectPreset(2, 5, 1.5, this)">
-                                    <div class="preset-name">🔍 Standard</div>
+                                    <div class="preset-name"><i class="fa-solid fa-magnifying-glass"></i> Standard</div>
                                     <div class="preset-desc">Depth 2 | 5 Workers</div>
                                 </div>
                                 <div class="preset-card" onclick="selectPreset(3, 10, 0.5, this)">
-                                    <div class="preset-name">🚀 Infiltration</div>
+                                    <div class="preset-name"><i class="fa-solid fa-rocket"></i> Infiltration</div>
                                     <div class="preset-desc">Depth 3 | 10 Workers</div>
                                 </div>
                             </div>
@@ -666,7 +653,7 @@
                         <input type="hidden" id="recon-delay" value="1.5">
 
                         <button type="submit" class="btn-primary" id="btn-dispatch-recon">
-                            <span>🚀</span> Dispatch SOCKS5 Crawler Swarm
+                            <i class="fa-solid fa-paper-plane"></i> Dispatch SOCKS5 Crawler Swarm
                         </button>
                     </form>
                 </div>
@@ -674,15 +661,15 @@
                 <!-- Live Recon Feed / Console Log -->
                 <div class="cyber-panel">
                     <div class="panel-header">
-                        <h2 class="panel-title"><span>📡</span> Tactical Activity Stream</h2>
-                        <button class="btn-secondary mono" onclick="clearConsoleLog()">Clear</button>
+                        <h2 class="panel-title"><i class="fa-solid fa-terminal"></i> Tactical Activity Stream</h2>
+                        <button class="btn-secondary mono" onclick="clearConsoleLog()"><i class="fa-solid fa-trash-can"></i> Clear</button>
                     </div>
 
                     <div class="terminal-box" id="terminal-stream">
                         <div class="terminal-line"><span class="terminal-timestamp">[SYSTEM READY]</span> DeepRecon v3.2.0 OSINT Core Initialized.</div>
-                        <div class="terminal-line"><span class="terminal-timestamp">[OPSEC]</span> Tor circuit online on SOCKS5 127.0.0.1:9050.</div>
-                        <div class="terminal-line"><span class="terminal-timestamp">[AI ENGINE]</span> Multi-provider threat router loaded.</div>
-                        <div class="terminal-line"><span class="terminal-timestamp">[STORAGE]</span> SQLite FTS5 BM25 full-text indexing active.</div>
+                        <div class="terminal-line"><span class="terminal-timestamp">[OPSEC]</span> Tor circuit active on SOCKS5 127.0.0.1:9050.</div>
+                        <div class="terminal-line"><span class="terminal-timestamp">[INDEXEDDB]</span> Secure client storage database initialized.</div>
+                        <div class="terminal-line"><span class="terminal-timestamp">[STORAGE]</span> SQLite FTS5 BM25 search index active.</div>
                     </div>
                 </div>
             </div>
@@ -690,7 +677,7 @@
             <!-- Recent Sessions Quick Table -->
             <div class="cyber-panel">
                 <div class="panel-header">
-                    <h2 class="panel-title"><span>📁</span> Recorded Reconnaissance Sessions</h2>
+                    <h2 class="panel-title"><i class="fa-solid fa-folder-tree"></i> Recorded Reconnaissance Sessions</h2>
                     <span class="badge badge-purple mono" id="session-count-badge">{{ sessions|length }} Sessions</span>
                 </div>
 
@@ -714,10 +701,12 @@
                                 <td class="mono text-dim" style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                     {{ session.seed_url or "Direct Crawl" }}
                                 </td>
-                                <td><span class="badge badge-emerald mono">{{ session.status or "Active" }}</span></td>
+                                <td><span class="badge badge-emerald mono"><i class="fa-solid fa-circle-check"></i> {{ session.status or "Active" }}</span></td>
                                 <td class="mono text-dim">{{ session.started_at[:16] if session.started_at else "-" }}</td>
                                 <td>
-                                    <button class="btn-secondary mono" onclick="inspectSession({{ session.id }})">🔍 Inspect Vault</button>
+                                    <button class="btn-secondary mono" onclick="inspectSession({{ session.id }})">
+                                        <i class="fa-solid fa-magnifying-glass-chart"></i> Inspect
+                                    </button>
                                 </td>
                             </tr>
                             {% else %}
@@ -739,17 +728,17 @@
         <div id="tab-metasearch" class="tab-content">
             <div class="cyber-panel">
                 <div class="panel-header">
-                    <h2 class="panel-title"><span>🧅</span> Global Dark Web Meta-Search Engine</h2>
-                    <span class="badge badge-cyan mono">11 Search Indexes</span>
+                    <h2 class="panel-title"><i class="fa-solid fa-spider"></i> Global Dark Web Meta-Search Engine</h2>
+                    <span class="badge badge-cyan mono"><i class="fa-solid fa-network-wired"></i> 11 Onion Indexes</span>
                 </div>
                 <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">
-                    Query Ahmia, OnionLand, Torch, Kaizer, Amnesia, Anima, Find Tor, TorNet and more concurrently to discover live hidden services.
+                    Query Ahmia, OnionLand, Torch, Kaizer, Amnesia, Anima, Find Tor, TorNet concurrently to discover live hidden services.
                 </p>
 
                 <form id="metasearch-form" onsubmit="handleMetaSearchSubmit(event)" style="display: flex; gap: 12px; margin-bottom: 24px;">
                     <input type="text" id="metasearch-query" class="form-input mono" placeholder="Search keywords (e.g. market, escrow, leak, ransomware, forum...)" required style="flex-grow: 1;">
                     <button type="submit" class="btn-primary" style="width: auto; padding: 0 32px;" id="btn-metasearch">
-                        <span>🔍</span> Query 11 Engines
+                        <i class="fa-solid fa-magnifying-glass"></i> Query 11 Engines
                     </button>
                 </form>
 
@@ -783,8 +772,8 @@
                 <!-- AI Setup Panel -->
                 <div class="cyber-panel">
                     <div class="panel-header">
-                        <h2 class="panel-title"><span>🤖</span> AI Threat Intelligence Workbench</h2>
-                        <span class="badge badge-purple mono">Multi-Provider</span>
+                        <h2 class="panel-title"><i class="fa-solid fa-brain"></i> AI Threat Intelligence Workbench</h2>
+                        <span class="badge badge-purple mono"><i class="fa-solid fa-microchip"></i> Multi-Model</span>
                     </div>
 
                     <form id="ai-analysis-form" onsubmit="handleAIAnalysisSubmit(event)">
@@ -800,27 +789,37 @@
 
                         <div class="form-group">
                             <label class="form-label">Target URL</label>
-                            <input type="text" id="ai-target-url" class="form-input mono" placeholder="http://target.onion">
+                            <input type="text" id="ai-target-url" class="form-input mono" placeholder="http://targetxxxx.onion">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Investigation Focus Preset</label>
+                            <select id="ai-focus-select" class="form-select mono">
+                                <option value="general">Comprehensive Threat Intelligence Dossier</option>
+                                <option value="crypto_fraud">Financial Crime & Cryptocurrency Forensics</option>
+                                <option value="marketplace_drugs">Darknet Marketplace & Vendor Triage</option>
+                                <option value="vulnerability_exploit">Offensive Vulnerability & Misconfiguration Research</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">AI Model to Deploy</label>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="ai-model-input" class="form-input mono" placeholder="llama3 / gemini-1.5-flash / gpt-4o" value="llama3">
+                                <button type="button" class="btn-secondary mono" onclick="loadModelsFromSettings()">
+                                    <i class="fa-solid fa-list"></i> Select
+                                </button>
+                            </div>
+                            <p class="input-hint">Configure API keys or custom endpoints in the <a href="javascript:void(0)" onclick="switchTab('settings')" style="color: var(--accent-cyan);">Settings Tab</a>.</p>
                         </div>
 
                         <div class="form-group">
                             <label class="form-label">Raw Intelligence Snippet / HTML Content</label>
-                            <textarea id="ai-raw-content" class="form-textarea mono" rows="6" placeholder="Paste extracted page text, logs, or raw dump here..."></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">AI Provider Override</label>
-                            <select id="ai-provider-select" class="form-select mono">
-                                <option value="ollama" {% if ai_provider == 'OLLAMA' %}selected{% endif %}>Ollama (Local Llama 3)</option>
-                                <option value="gemini" {% if ai_provider == 'GEMINI' %}selected{% endif %}>Google Gemini (1.5 Flash)</option>
-                                <option value="openai" {% if ai_provider == 'OPENAI' %}selected{% endif %}>OpenAI (GPT-4o)</option>
-                                <option value="anthropic" {% if ai_provider == 'ANTHROPIC' %}selected{% endif %}>Anthropic (Claude 3.5)</option>
-                                <option value="heuristics">Deterministic Heuristic Triage (Offline)</option>
-                            </select>
+                            <textarea id="ai-raw-content" class="form-textarea mono" rows="5" placeholder="Paste extracted page text, logs, or raw HTML dump here..."></textarea>
                         </div>
 
                         <button type="submit" class="btn-primary" id="btn-run-ai" style="background: linear-gradient(135deg, #a855f7 0%, #00f2fe 100%);">
-                            <span>🧠</span> Synthesize Threat Intelligence Dossier
+                            <i class="fa-solid fa-dna"></i> Synthesize Threat Intelligence Dossier
                         </button>
                     </form>
                 </div>
@@ -828,12 +827,15 @@
                 <!-- AI Output Card -->
                 <div class="cyber-panel">
                     <div class="panel-header">
-                        <h2 class="panel-title"><span>📋</span> OSINT Threat Assessment Dossier</h2>
-                        <button class="btn-secondary mono" onclick="copyDossier()">📋 Copy Dossier</button>
+                        <h2 class="panel-title"><i class="fa-solid fa-file-shield"></i> OSINT Threat Assessment Dossier</h2>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn-secondary mono" onclick="saveDossierToIndexedDB()"><i class="fa-solid fa-bookmark"></i> Save to Vault</button>
+                            <button class="btn-secondary mono" onclick="copyDossier()"><i class="fa-solid fa-copy"></i> Copy</button>
+                        </div>
                     </div>
 
                     <div id="ai-output-container">
-                        <div class="dossier-card" id="ai-dossier-text">Select a session or enter content and click "Synthesize Threat Intelligence Dossier" to generate an automated cybersecurity triage report.</div>
+                        <div class="dossier-card" id="ai-dossier-text">Select a session or enter target intelligence and click "Synthesize Threat Intelligence Dossier" to generate an automated cybersecurity triage report.</div>
                     </div>
                 </div>
             </div>
@@ -845,10 +847,10 @@
         <div id="tab-vault" class="tab-content">
             <div class="cyber-panel">
                 <div class="panel-header">
-                    <h2 class="panel-title"><span>📁</span> Forensic Intelligence Vault</h2>
+                    <h2 class="panel-title"><i class="fa-solid fa-vault"></i> Forensic Intelligence Vault</h2>
                     <div style="display: flex; gap: 10px;">
-                        <button class="btn-secondary mono" onclick="generateReportForCurrentSession('html')">📄 Export HTML</button>
-                        <button class="btn-secondary mono" onclick="generateReportForCurrentSession('json')">💾 Export JSON</button>
+                        <button class="btn-secondary mono" onclick="generateReportForCurrentSession('html')"><i class="fa-solid fa-file-code"></i> Export HTML</button>
+                        <button class="btn-secondary mono" onclick="generateReportForCurrentSession('json')"><i class="fa-solid fa-file-lines"></i> Export JSON</button>
                     </div>
                 </div>
 
@@ -870,27 +872,27 @@
                             <p class="mono text-dim text-xs" id="vault-session-target">Target: -</p>
                         </div>
                         <div style="display: flex; gap: 8px;">
-                            <span class="badge badge-cyan mono" id="vault-pages-count">0 Pages</span>
-                            <span class="badge badge-purple mono" id="vault-crypto-count">0 Crypto Wallets</span>
-                            <span class="badge badge-emerald mono" id="vault-emails-count">0 Emails</span>
+                            <span class="badge badge-cyan mono" id="vault-pages-count"><i class="fa-solid fa-file"></i> 0 Pages</span>
+                            <span class="badge badge-purple mono" id="vault-crypto-count"><i class="fa-brands fa-bitcoin"></i> 0 Crypto</span>
+                            <span class="badge badge-emerald mono" id="vault-emails-count"><i class="fa-solid fa-envelope"></i> 0 Emails</span>
                         </div>
                     </div>
 
                     <!-- Discovered Crypto Wallets Section -->
                     <div style="margin-bottom: 24px;">
-                        <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 12px;">💰 Cryptocurrency Artifacts</h4>
+                        <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 12px;"><i class="fa-brands fa-bitcoin"></i> Cryptocurrency Artifacts</h4>
                         <div id="vault-crypto-grid" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
                     </div>
 
                     <!-- Discovered Emails Section -->
                     <div style="margin-bottom: 24px;">
-                        <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--accent-blue); margin-bottom: 12px;">📧 Discovered Email Contacts</h4>
+                        <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--accent-blue); margin-bottom: 12px;"><i class="fa-solid fa-envelope"></i> Discovered Email Contacts</h4>
                         <div id="vault-emails-grid" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
                     </div>
 
                     <!-- Discovered Pages Table -->
                     <div style="margin-bottom: 24px;">
-                        <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 12px;">📄 Crawled Nodes & Pages</h4>
+                        <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 12px;"><i class="fa-solid fa-network-wired"></i> Crawled Nodes & Pages</h4>
                         <div class="table-responsive">
                             <table class="cyber-table">
                                 <thead>
@@ -916,13 +918,13 @@
         <div id="tab-search" class="tab-content">
             <div class="cyber-panel">
                 <div class="panel-header">
-                    <h2 class="panel-title"><span>🔍</span> DeepRecon Search & SQLite FTS5 Engine</h2>
+                    <h2 class="panel-title"><i class="fa-solid fa-magnifying-glass"></i> DeepRecon Search & SQLite FTS5 Engine</h2>
                     <span class="badge badge-cyan mono">BM25 Ranking</span>
                 </div>
 
                 <form id="fts-search-form" onsubmit="handleFTSSearchSubmit(event)" style="display: flex; gap: 12px; margin-bottom: 24px;">
                     <input type="text" id="fts-search-query" class="form-input mono" placeholder="Search keywords, crypto addresses, emails, tech stacks across all indexed pages..." required style="flex-grow: 1;">
-                    <button type="submit" class="btn-primary" style="width: auto; padding: 0 32px;">Search FTS5</button>
+                    <button type="submit" class="btn-primary" style="width: auto; padding: 0 32px;"><i class="fa-solid fa-magnifying-glass"></i> Search FTS5</button>
                 </form>
 
                 <div id="fts-results-container" style="display: none;">
@@ -933,33 +935,103 @@
         </div>
 
         <!-- ================================================================= -->
-        <!-- TAB 6: OPSEC DIAGNOSTICS -->
+        <!-- TAB 6: SETTINGS & AI CONFIGURATION (IndexedDB Powered) -->
         <!-- ================================================================= -->
-        <div id="tab-opsec" class="tab-content">
+        <div id="tab-settings" class="tab-content">
             <div class="cyber-panel">
                 <div class="panel-header">
-                    <h2 class="panel-title"><span>🛡️</span> OPSEC Diagnostics & Tor Circuit Control</h2>
+                    <h2 class="panel-title"><i class="fa-solid fa-sliders"></i> AI Threat Engine & OPSEC Configuration</h2>
+                    <span class="badge badge-emerald mono"><i class="fa-solid fa-database"></i> IndexedDB Synced</span>
                 </div>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 24px;">
+                    All API keys, custom endpoints, and operational preferences are persisted locally inside your browser's private <strong>IndexedDB</strong> store.
+                </p>
 
-                <div class="layout-split">
-                    <div style="background: var(--bg-base); padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
-                        <h3 style="font-size: 1rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 14px;">🧅 Tor Circuit Status</h3>
-                        <p style="margin-bottom: 8px; font-size: 0.85rem;">Current Exit IP: <span class="mono" style="color: var(--accent-emerald);" id="opsec-exit-ip">{{ tor_ip }}</span></p>
-                        <p style="margin-bottom: 8px; font-size: 0.85rem;">SOCKS5 Proxy Endpoint: <span class="mono text-dim">socks5h://127.0.0.1:9050</span></p>
-                        <p style="margin-bottom: 16px; font-size: 0.85rem;">Control Port: <span class="mono text-dim">9051</span></p>
+                <form id="settings-form" onsubmit="saveSettingsToIndexedDB(event)">
+                    <div class="layout-split">
+                        <!-- Left Column: AI Model & Endpoint -->
+                        <div>
+                            <h3 style="font-size: 1rem; font-weight: 700; color: var(--accent-purple); margin-bottom: 16px;">
+                                <i class="fa-solid fa-brain"></i> AI Provider & Endpoint Setup
+                            </h3>
 
-                        <button class="btn-primary" onclick="rotateTorCircuit()" style="width: auto;">
-                            <span>🔄</span> Request New Tor Circuit (NEWNYM)
+                            <div class="form-group">
+                                <label class="form-label">Active AI Provider</label>
+                                <select id="setting-ai-provider" class="form-select mono" onchange="onSettingProviderChange(this.value)">
+                                    <option value="ollama">Ollama (Local Offline LLM)</option>
+                                    <option value="gemini">Google Gemini (Gemini 1.5 / 2.0 Flash)</option>
+                                    <option value="openai">OpenAI (GPT-4o / GPT-4o-mini)</option>
+                                    <option value="anthropic">Anthropic (Claude 3.5 Sonnet / Haiku)</option>
+                                    <option value="openrouter">OpenRouter (Unified Multi-Model Gateway)</option>
+                                    <option value="custom">Custom Endpoint (LMStudio / vLLM / LocalAI / OpenAI-compatible)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">AI Endpoint Base URL</label>
+                                <input type="text" id="setting-ai-endpoint" class="form-input mono" placeholder="http://127.0.0.1:11434">
+                                <p class="input-hint">e.g. http://127.0.0.1:11434 (Ollama), http://127.0.0.1:1234/v1 (LMStudio), https://api.openai.com/v1</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Model Identifier</label>
+                                <div style="display: flex; gap: 8px;">
+                                    <input type="text" id="setting-ai-model" class="form-input mono" placeholder="llama3 / gemini-1.5-flash / gpt-4o" value="llama3">
+                                    <button type="button" class="btn-secondary mono" onclick="fetchAvailableModels()">
+                                        <i class="fa-solid fa-rotate"></i> Fetch
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">API Key (Stored in IndexedDB)</label>
+                                <div style="display: flex; gap: 8px; position: relative;">
+                                    <input type="password" id="setting-ai-key" class="form-input mono" placeholder="sk-xxxx... or AIzaSy...">
+                                    <button type="button" class="btn-secondary mono" onclick="togglePasswordVisibility('setting-ai-key', this)">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+                                </div>
+                                <p class="input-hint">🔒 Keys never leave your client except during direct LLM synthesis requests.</p>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Tor & OPSEC Settings -->
+                        <div>
+                            <h3 style="font-size: 1rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 16px;">
+                                <i class="fa-solid fa-shield-halved"></i> Tor OPSEC & Crawler Defaults
+                            </h3>
+
+                            <div class="form-group">
+                                <label class="form-label">Tor SOCKS5 Proxy</label>
+                                <input type="text" id="setting-tor-proxy" class="form-input mono" value="socks5h://127.0.0.1:9050">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Tor Control Port</label>
+                                <input type="number" id="setting-tor-control" class="form-input mono" value="9051">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Default Crawl Concurrency (Workers)</label>
+                                <input type="number" id="setting-default-workers" class="form-input mono" value="5" min="1" max="20">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Default Request Delay (Seconds)</label>
+                                <input type="number" id="setting-default-delay" class="form-input mono" value="1.5" step="0.1" min="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end;">
+                        <button type="button" class="btn-secondary mono" onclick="clearIndexedDBCache()">
+                            <i class="fa-solid fa-trash"></i> Clear IndexedDB Cache
+                        </button>
+                        <button type="submit" class="btn-primary" style="width: auto; padding: 12px 32px;">
+                            <i class="fa-solid fa-floppy-disk"></i> Save Settings to IndexedDB
                         </button>
                     </div>
-
-                    <div style="background: var(--bg-base); padding: 20px; border-radius: var(--radius-md); border: 1px solid var(--border-subtle);">
-                        <h3 style="font-size: 1rem; font-weight: 700; color: var(--accent-purple); margin-bottom: 14px;">🤖 AI Engine Status</h3>
-                        <p style="margin-bottom: 8px; font-size: 0.85rem;">Active Provider: <span class="mono" style="color: var(--accent-purple);">{{ ai_provider }}</span></p>
-                        <p style="margin-bottom: 8px; font-size: 0.85rem;">Model Identifier: <span class="mono text-dim">{{ ai_model }}</span></p>
-                        <p style="font-size: 0.85rem; color: var(--text-dim);">Supported: Ollama, Gemini, OpenAI, Claude, OpenRouter, Offline Heuristics.</p>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>
@@ -967,21 +1039,212 @@
     <!-- Toast Notification Container -->
     <div id="toast-container"></div>
 
-    <!-- Reactive Vanilla JS Engine -->
+    <!-- ================================================================= -->
+    <!-- IndexedDB Engine & Client Logic -->
+    <!-- ================================================================= -->
     <script>
-        // Tab Navigation
+        // -------------------------------------------------------------
+        // IndexedDB Wrapper (DeepReconDB_v3)
+        // -------------------------------------------------------------
+        const IDB_NAME = 'DeepReconDB_v3';
+        const IDB_VERSION = 1;
+        let idb = null;
+
+        function initIndexedDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(IDB_NAME, IDB_VERSION);
+
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains('settings')) {
+                        db.createObjectStore('settings', { keyPath: 'key' });
+                    }
+                    if (!db.objectStoreNames.contains('dossiers')) {
+                        db.createObjectStore('dossiers', { keyPath: 'id', autoIncrement: true });
+                    }
+                    if (!db.objectStoreNames.contains('activity_logs')) {
+                        db.createObjectStore('activity_logs', { keyPath: 'id', autoIncrement: true });
+                    }
+                };
+
+                request.onsuccess = (e) => {
+                    idb = e.target.result;
+                    loadSettingsFromIndexedDB();
+                    resolve(idb);
+                };
+
+                request.onerror = (e) => {
+                    console.error('IndexedDB Error:', e.target.error);
+                    reject(e.target.error);
+                };
+            });
+        }
+
+        async function idbGet(storeName, key) {
+            return new Promise((resolve, reject) => {
+                if (!idb) return resolve(null);
+                const tx = idb.transaction(storeName, 'readonly');
+                const store = tx.objectStore(storeName);
+                const req = store.get(key);
+                req.onsuccess = () => resolve(req.result ? req.result.value : null);
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        async function idbSet(storeName, key, value) {
+            return new Promise((resolve, reject) => {
+                if (!idb) return resolve();
+                const tx = idb.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                const req = store.put({ key, value });
+                req.onsuccess = () => resolve();
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        async function idbClear(storeName) {
+            return new Promise((resolve, reject) => {
+                if (!idb) return resolve();
+                const tx = idb.transaction(storeName, 'readwrite');
+                const store = tx.objectStore(storeName);
+                const req = store.clear();
+                req.onsuccess = () => resolve();
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        // -------------------------------------------------------------
+        // Settings Manager
+        // -------------------------------------------------------------
+        async function loadSettingsFromIndexedDB() {
+            try {
+                const provider = await idbGet('settings', 'ai_provider');
+                const endpoint = await idbGet('settings', 'ai_endpoint');
+                const model = await idbGet('settings', 'ai_model');
+                const key = await idbGet('settings', 'ai_key');
+                const proxy = await idbGet('settings', 'tor_proxy');
+
+                if (provider) document.getElementById('setting-ai-provider').value = provider;
+                if (endpoint) document.getElementById('setting-ai-endpoint').value = endpoint;
+                if (model) {
+                    document.getElementById('setting-ai-model').value = model;
+                    document.getElementById('ai-model-input').value = model;
+                }
+                if (key) document.getElementById('setting-ai-key').value = key;
+                if (proxy) document.getElementById('setting-tor-proxy').value = proxy;
+
+                if (provider) {
+                    document.getElementById('ai-provider-display').innerText = provider.toUpperCase();
+                }
+            } catch (err) {
+                console.error('Failed to load settings from IndexedDB:', err);
+            }
+        }
+
+        async function saveSettingsToIndexedDB(e) {
+            if (e) e.preventDefault();
+            const provider = document.getElementById('setting-ai-provider').value;
+            const endpoint = document.getElementById('setting-ai-endpoint').value.trim();
+            const model = document.getElementById('setting-ai-model').value.trim();
+            const key = document.getElementById('setting-ai-key').value.trim();
+            const proxy = document.getElementById('setting-tor-proxy').value.trim();
+
+            await idbSet('settings', 'ai_provider', provider);
+            await idbSet('settings', 'ai_endpoint', endpoint);
+            await idbSet('settings', 'ai_model', model);
+            await idbSet('settings', 'ai_key', key);
+            await idbSet('settings', 'tor_proxy', proxy);
+
+            document.getElementById('ai-provider-display').innerText = provider.toUpperCase();
+            document.getElementById('ai-model-input').value = model;
+
+            showToast('Settings saved to IndexedDB!', '<i class="fa-solid fa-floppy-disk"></i>');
+            logTerminal(`[SETTINGS] Updated AI configuration: ${provider.toUpperCase()} (Model: ${model})`);
+        }
+
+        function onSettingProviderChange(provider) {
+            const endpointInput = document.getElementById('setting-ai-endpoint');
+            const modelInput = document.getElementById('setting-ai-model');
+
+            if (provider === 'ollama') {
+                endpointInput.value = 'http://127.0.0.1:11434';
+                modelInput.value = 'llama3';
+            } else if (provider === 'gemini') {
+                endpointInput.value = '';
+                modelInput.value = 'gemini-1.5-flash';
+            } else if (provider === 'openai') {
+                endpointInput.value = 'https://api.openai.com/v1';
+                modelInput.value = 'gpt-4o';
+            } else if (provider === 'anthropic') {
+                endpointInput.value = '';
+                modelInput.value = 'claude-3-5-haiku-20241022';
+            } else if (provider === 'openrouter') {
+                endpointInput.value = 'https://openrouter.ai/api/v1';
+                modelInput.value = 'openai/gpt-4o-mini';
+            } else if (provider === 'custom') {
+                endpointInput.value = 'http://127.0.0.1:1234/v1';
+                modelInput.value = 'local-model';
+            }
+        }
+
+        async function fetchAvailableModels() {
+            const endpoint = document.getElementById('setting-ai-endpoint').value.trim();
+            try {
+                const resp = await fetch(`/api/ai/models?endpoint_url=${encodeURIComponent(endpoint)}`);
+                const data = await resp.json();
+                if (data.models && data.models.length > 0) {
+                    document.getElementById('setting-ai-model').value = data.models[0];
+                    showToast(`Discovered ${data.models.length} models: ${data.models.slice(0, 3).join(', ')}...`, '<i class="fa-solid fa-list-check"></i>');
+                }
+            } catch (err) {
+                showToast('Could not auto-fetch models from endpoint', '⚠️');
+            }
+        }
+
+        function loadModelsFromSettings() {
+            switchTab('settings');
+            showToast('Select or fetch your preferred AI model here', '<i class="fa-solid fa-sliders"></i>');
+        }
+
+        function togglePasswordVisibility(id, btn) {
+            const input = document.getElementById(id);
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>';
+            } else {
+                input.type = 'password';
+                btn.innerHTML = '<i class="fa-solid fa-eye"></i>';
+            }
+        }
+
+        async function clearIndexedDBCache() {
+            if (confirm('Clear all locally saved settings & cached dossiers from IndexedDB?')) {
+                await idbClear('settings');
+                await idbClear('dossiers');
+                await idbClear('activity_logs');
+                showToast('IndexedDB cache cleared.', '<i class="fa-solid fa-trash-can"></i>');
+            }
+        }
+
+        // -------------------------------------------------------------
+        // UI Navigation & Helpers
+        // -------------------------------------------------------------
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
-            
+
             const target = document.getElementById(`tab-${tabId}`);
             if (target) target.classList.add('active');
-            
-            event.currentTarget.classList.add('active');
+
+            const tabButtons = document.querySelectorAll('.nav-tab');
+            tabButtons.forEach(btn => {
+                if (btn.getAttribute('onclick')?.includes(tabId)) {
+                    btn.classList.add('active');
+                }
+            });
         }
 
-        // Toast Helper
-        function showToast(message, icon = '✓') {
+        function showToast(message, icon = '<i class="fa-solid fa-check"></i>') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = 'toast';
@@ -990,7 +1253,6 @@
             setTimeout(() => toast.remove(), 4500);
         }
 
-        // Terminal Log Appender
         function logTerminal(msg) {
             const stream = document.getElementById('terminal-stream');
             const line = document.createElement('div');
@@ -1006,7 +1268,6 @@
             logTerminal('Console buffer cleared.');
         }
 
-        // Recon Presets Selection
         function selectPreset(depth, workers, delay, el) {
             document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('selected'));
             el.classList.add('selected');
@@ -1015,7 +1276,9 @@
             document.getElementById('recon-delay').value = delay;
         }
 
-        // Launch Recon Swarm
+        // -------------------------------------------------------------
+        // Recon Swarm Handler
+        // -------------------------------------------------------------
         async function handleReconSubmit(e) {
             e.preventDefault();
             const url = document.getElementById('recon-url').value.trim();
@@ -1026,7 +1289,7 @@
 
             const btn = document.getElementById('btn-dispatch-recon');
             btn.disabled = true;
-            btn.innerHTML = '<span>⏳</span> Dispatching Crawler Swarm...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Dispatching Crawler Swarm...';
 
             logTerminal(`[DISPATCH] Launching crawl on target: ${url} (Depth: ${depth}, Workers: ${workers})`);
 
@@ -1042,19 +1305,19 @@
                 const data = await resp.json();
 
                 if (resp.ok) {
-                    showToast(`Recon swarm deployed for session #${data.session_id}!`, '🚀');
+                    showToast(`Recon swarm deployed for session #${data.session_id}!`, '<i class="fa-solid fa-paper-plane"></i>');
                     logTerminal(`[SUCCESS] Crawl initiated! Session ID: ${data.session_id} (${data.session_name})`);
                     refreshSystemData();
                 } else {
-                    showToast(data.detail || 'Failed to dispatch scan', '✗');
+                    showToast(data.detail || 'Failed to dispatch scan', '<i class="fa-solid fa-xmark"></i>');
                     logTerminal(`[ERROR] Dispatch failed: ${data.detail}`);
                 }
             } catch (err) {
-                showToast('Network error while dispatching scan', '✗');
+                showToast('Network error while dispatching scan', '<i class="fa-solid fa-xmark"></i>');
                 logTerminal(`[ERROR] Request failed: ${err}`);
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<span>🚀</span> Dispatch SOCKS5 Crawler Swarm';
+                btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Dispatch SOCKS5 Crawler Swarm';
             }
         }
 
@@ -1065,16 +1328,15 @@
                 const resp = await fetch('/api/tor/renew', { method: 'POST' });
                 const data = await resp.json();
                 if (data.success) {
-                    showToast(`Tor Identity Renewed! Exit IP: ${data.tor_ip}`, '🧅');
+                    showToast(`Tor Identity Renewed! Exit IP: ${data.tor_ip}`, '<i class="fa-solid fa-shield-halved"></i>');
                     document.getElementById('tor-ip-display').innerText = data.tor_ip;
-                    document.getElementById('opsec-exit-ip').innerText = data.tor_ip;
                     logTerminal(`[OPSEC] Tor circuit rotated. Current exit IP: ${data.tor_ip}`);
                 } else {
                     showToast('Could not renew Tor circuit (Control port offline)', '⚠️');
                     logTerminal('[OPSEC] Tor identity renewal unavailable.');
                 }
             } catch (err) {
-                showToast('Tor renewal error', '✗');
+                showToast('Tor renewal error', '<i class="fa-solid fa-xmark"></i>');
             }
         }
 
@@ -1084,7 +1346,7 @@
             const query = document.getElementById('metasearch-query').value.trim();
             const btn = document.getElementById('btn-metasearch');
             btn.disabled = true;
-            btn.innerHTML = '<span>⏳</span> Querying 11 Engines...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Querying 11 Engines...';
 
             logTerminal(`[METASEARCH] Querying dark web indexes for: "${query}"...`);
 
@@ -1111,22 +1373,22 @@
                             <td>${enginesPills}</td>
                             <td>
                                 <button class="btn-mini-action" onclick="targetMetaSearchUrl('${r.url}')">
-                                    <span>🎯</span> Target
+                                    <i class="fa-solid fa-crosshairs"></i> Target
                                 </button>
                             </td>
                         `;
                         tbody.appendChild(row);
                     });
                     logTerminal(`[METASEARCH] Finished! ${data.count} services discovered.`);
-                    showToast(`Discovered ${data.count} hidden services!`, '🧅');
+                    showToast(`Discovered ${data.count} hidden services!`, '<i class="fa-solid fa-spider"></i>');
                 } else {
                     tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-dim); padding: 24px;">No hidden services found for this query.</td></tr>';
                 }
             } catch (err) {
-                showToast('Meta-search failed', '✗');
+                showToast('Meta-search failed', '<i class="fa-solid fa-xmark"></i>');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<span>🔍</span> Query 11 Engines';
+                btn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i> Query 11 Engines';
             }
         }
 
@@ -1134,45 +1396,57 @@
             document.getElementById('recon-url').value = url;
             document.getElementById('recon-session-name').value = `OP_META_${Math.floor(Date.now() / 1000)}`;
             switchTab('mission-control');
-            showToast(`Loaded ${url} into Recon Launcher!`, '🎯');
+            showToast(`Loaded ${url} into Recon Launcher!`, '<i class="fa-solid fa-crosshairs"></i>');
         }
 
+        // -------------------------------------------------------------
         // AI Threat Intelligence
+        // -------------------------------------------------------------
         async function handleAIAnalysisSubmit(e) {
             e.preventDefault();
             const sessionId = document.getElementById('ai-session-select').value;
             const targetUrl = document.getElementById('ai-target-url').value.trim();
             const content = document.getElementById('ai-raw-content').value.trim();
-            const provider = document.getElementById('ai-provider-select').value;
+            const focus = document.getElementById('ai-focus-select').value;
+            const model = document.getElementById('ai-model-input').value.trim();
+
+            // Pull custom credentials from IndexedDB
+            const provider = (await idbGet('settings', 'ai_provider')) || 'ollama';
+            const endpoint = (await idbGet('settings', 'ai_endpoint')) || '';
+            const key = (await idbGet('settings', 'ai_key')) || '';
 
             const btn = document.getElementById('btn-run-ai');
             btn.disabled = true;
-            btn.innerHTML = '<span>⏳</span> Synthesizing Threat Intelligence...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Synthesizing Threat Intelligence...';
 
-            logTerminal(`[AI LAB] Dispatching prompt to ${provider.toUpperCase()} threat engine...`);
+            logTerminal(`[AI LAB] Dispatching prompt to ${provider.toUpperCase()} (${model})...`);
 
             try {
                 const formData = new FormData();
                 if (sessionId) formData.append('session_id', sessionId);
                 if (targetUrl) formData.append('target_url', targetUrl);
                 if (content) formData.append('content', content);
-                if (provider) formData.append('provider', provider);
+                formData.append('focus', focus);
+                formData.append('provider', provider);
+                formData.append('model', model);
+                if (endpoint) formData.append('endpoint_url', endpoint);
+                if (key) formData.append('api_key', key);
 
                 const resp = await fetch('/api/ai_analyze', { method: 'POST', body: formData });
                 const data = await resp.json();
 
                 if (resp.ok) {
                     document.getElementById('ai-dossier-text').innerText = data.summary;
-                    showToast('AI Threat Assessment Complete!', '🧠');
-                    logTerminal(`[AI LAB] Threat dossier synthesized via ${data.provider}`);
+                    showToast('AI Threat Assessment Complete!', '<i class="fa-solid fa-brain"></i>');
+                    logTerminal(`[AI LAB] Threat dossier synthesized via ${data.provider} (${data.model})`);
                 } else {
-                    showToast(data.detail || 'Analysis error', '✗');
+                    showToast(data.detail || 'Analysis error', '<i class="fa-solid fa-xmark"></i>');
                 }
             } catch (err) {
-                showToast('AI analysis request failed', '✗');
+                showToast('AI analysis request failed', '<i class="fa-solid fa-xmark"></i>');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<span>🧠</span> Synthesize Threat Intelligence Dossier';
+                btn.innerHTML = '<i class="fa-solid fa-dna"></i> Synthesize Threat Intelligence Dossier';
             }
         }
 
@@ -1186,13 +1460,31 @@
             }
         }
 
+        async function saveDossierToIndexedDB() {
+            const text = document.getElementById('ai-dossier-text').innerText;
+            if (!text || text.includes('Select a session or enter target')) {
+                showToast('No dossier content to save', '⚠️');
+                return;
+            }
+            if (idb) {
+                const tx = idb.transaction('dossiers', 'readwrite');
+                tx.objectStore('dossiers').add({
+                    dossier: text,
+                    created_at: new Date().toISOString(),
+                });
+                showToast('Dossier saved to IndexedDB Vault!', '<i class="fa-solid fa-bookmark"></i>');
+            }
+        }
+
         function copyDossier() {
             const text = document.getElementById('ai-dossier-text').innerText;
             navigator.clipboard.writeText(text);
-            showToast('Dossier copied to clipboard!', '📋');
+            showToast('Dossier copied to clipboard!', '<i class="fa-solid fa-copy"></i>');
         }
 
+        // -------------------------------------------------------------
         // Vault Session Inspector
+        // -------------------------------------------------------------
         async function loadVaultSession(sessionId) {
             if (!sessionId) {
                 document.getElementById('vault-data-container').style.display = 'none';
@@ -1206,14 +1498,14 @@
                 document.getElementById('vault-data-container').style.display = 'block';
                 document.getElementById('vault-session-name').innerText = `${data.session.name} (#${data.session.id})`;
                 document.getElementById('vault-session-target').innerText = `Target: ${data.session.seed_url || 'Direct'}`;
-                document.getElementById('vault-pages-count').innerText = `${data.pages.length} Pages`;
-                
+                document.getElementById('vault-pages-count').innerHTML = `<i class="fa-solid fa-file"></i> ${data.pages.length} Pages`;
+
                 const btc = data.crypto_hits.bitcoin || [];
                 const eth = data.crypto_hits.ethereum || [];
                 const xmr = data.crypto_hits.monero || [];
                 const totalCrypto = btc.length + eth.length + xmr.length;
-                document.getElementById('vault-crypto-count').innerText = `${totalCrypto} Crypto Wallets`;
-                document.getElementById('vault-emails-count').innerText = `${data.emails.length} Emails`;
+                document.getElementById('vault-crypto-count').innerHTML = `<i class="fa-brands fa-bitcoin"></i> ${totalCrypto} Crypto`;
+                document.getElementById('vault-emails-count').innerHTML = `<i class="fa-solid fa-envelope"></i> ${data.emails.length} Emails`;
 
                 // Render Crypto
                 const cryptoGrid = document.getElementById('vault-crypto-grid');
@@ -1254,7 +1546,7 @@
                 });
 
             } catch (err) {
-                showToast('Failed to load session details', '✗');
+                showToast('Failed to load session details', '<i class="fa-solid fa-xmark"></i>');
             }
         }
 
@@ -1277,12 +1569,12 @@
                 const resp = await fetch('/api/report/generate', { method: 'POST', body: formData });
                 const data = await resp.json();
                 if (data.success) {
-                    showToast('Forensic Dossier Generated!', '📄');
+                    showToast('Forensic Dossier Generated!', '<i class="fa-solid fa-file-shield"></i>');
                     const fileUrl = data.files[fmt];
                     if (fileUrl) window.open(fileUrl, '_blank');
                 }
             } catch (err) {
-                showToast('Report generation failed', '✗');
+                showToast('Report generation failed', '<i class="fa-solid fa-xmark"></i>');
             }
         }
 
@@ -1323,7 +1615,7 @@
                     list.innerHTML = '<p class="mono text-dim" style="padding:20px; text-align:center;">No matching pages found in FTS5 index.</p>';
                 }
             } catch (err) {
-                showToast('Search query failed', '✗');
+                showToast('Search query failed', '<i class="fa-solid fa-xmark"></i>');
             }
         }
 
@@ -1337,12 +1629,16 @@
                 document.getElementById('kpi-keywords').innerText = data.metrics.total_keywords;
                 document.getElementById('kpi-sessions').innerText = data.metrics.total_sessions;
                 document.getElementById('tor-ip-display').innerText = data.tor.exit_ip;
-                document.getElementById('opsec-exit-ip').innerText = data.tor.exit_ip;
-                showToast('Telemetry refreshed', '⚡');
+                showToast('Telemetry refreshed', '<i class="fa-solid fa-bolt"></i>');
             } catch (err) {
                 console.error(err);
             }
         }
+
+        // Initialize IndexedDB on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initIndexedDB();
+        });
     </script>
 </body>
 </html>

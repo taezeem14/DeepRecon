@@ -8,12 +8,12 @@ import time
 from pathlib import Path
 from typing import Any
 
+import requests
 import uvicorn
 from fastapi import BackgroundTasks, FastAPI, Form, HTTPException, Query, Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from pydantic import BaseModel
 
 from config import (
     AI_MODEL,
@@ -23,6 +23,7 @@ from config import (
     CRAWL_WORKERS,
     DB_PATH,
     MAX_RETRIES,
+    OLLAMA_URL,
     REPORTS_PATH,
     REQUEST_TIMEOUT,
     TOR_PROXY,
@@ -172,8 +173,7 @@ async def api_get_session_details(session_id: int):
 
     pages = db.list_pages(session_id)
     keyword_hits = db.list_keyword_hits(session_id)
-    
-    # Aggregated crypto, emails, PGP, tech
+
     crypto_hits: dict[str, list[str]] = {"bitcoin": [], "ethereum": [], "monero": []}
     emails_set: set[str] = set()
     pgp_set: set[str] = set()
@@ -193,7 +193,6 @@ async def api_get_session_details(session_id: int):
         for tech in meta.get("technologies", []):
             tech_set.add(tech)
 
-    # Deduplicate crypto
     crypto_hits["bitcoin"] = sorted(list(set(crypto_hits["bitcoin"])))
     crypto_hits["ethereum"] = sorted(list(set(crypto_hits["ethereum"])))
     crypto_hits["monero"] = sorted(list(set(crypto_hits["monero"])))
@@ -287,8 +286,12 @@ async def api_ai_analyze(
     target_url: str = Form(""),
     content: str = Form(""),
     provider: str = Form(None),
+    model: str = Form(None),
+    api_key: str = Form(None),
+    endpoint_url: str = Form(None),
+    focus: str = Form("general"),
 ):
-    """Run an on-demand AI threat intelligence assessment."""
+    """Run an on-demand AI threat intelligence assessment with custom model and endpoint."""
     metadata: dict[str, Any] = {}
     url = target_url
 
@@ -307,14 +310,69 @@ async def api_ai_analyze(
     if not content and not url:
         raise HTTPException(status_code=400, detail="Provide either session_id or url + content")
 
-    custom_analyzer = AIAnalyzer(provider=provider) if provider else ai_analyzer
-    summary = custom_analyzer.generate_investigation_summary(url, content, metadata)
+    analyzer = AIAnalyzer(
+        provider=provider,
+        model=model,
+        api_key=api_key,
+        endpoint_url=endpoint_url,
+    )
+    summary = analyzer.generate_investigation_summary(
+        target_url=url,
+        text_content=content,
+        metadata=metadata,
+        focus=focus,
+        provider=provider,
+        model=model,
+        api_key=api_key,
+        endpoint_url=endpoint_url,
+    )
 
     return JSONResponse(
         {
             "target_url": url,
             "provider": (provider or AI_PROVIDER).upper(),
+            "model": model or AI_MODEL or "default",
             "summary": summary,
+        }
+    )
+
+
+@app.get("/api/ai/models")
+async def api_ai_models(endpoint_url: str = Query(None)):
+    """Fetch locally available models from Ollama or OpenAI-compatible endpoint."""
+    target_url = endpoint_url or OLLAMA_URL or "http://127.0.0.1:11434"
+    try:
+        if "/v1" in target_url:
+            resp = requests.get(f"{target_url.rstrip('/')}/models", timeout=4)
+            if resp.status_code == 200:
+                data = resp.json()
+                models = [m.get("id") for m in data.get("data", []) if m.get("id")]
+                return JSONResponse({"models": models})
+        else:
+            resp = requests.get(f"{target_url.rstrip('/')}/api/tags", timeout=4)
+            if resp.status_code == 200:
+                data = resp.json()
+                models = [m.get("name") for m in data.get("models", []) if m.get("name")]
+                return JSONResponse({"models": models})
+    except Exception as exc:
+        LOGGER.debug("Could not fetch models: %s", exc)
+
+    return JSONResponse(
+        {
+            "models": [
+                "llama3",
+                "llama3.1:8b",
+                "llama3.1:70b",
+                "mistral",
+                "deepseek-r1",
+                "gemini-1.5-flash",
+                "gemini-1.5-pro",
+                "gemini-2.0-flash",
+                "gpt-4o",
+                "gpt-4o-mini",
+                "claude-3-5-sonnet-20241022",
+                "claude-3-5-haiku-20241022",
+            ]
         }
     )
 
@@ -361,7 +419,7 @@ async def api_get_report_file(filename: str):
     file_path = reports_dir / filename
     if not file_path.exists() or not file_path.is_file():
         raise HTTPException(status_code=404, detail="Report file not found")
-    
+
     if filename.endswith(".html"):
         return FileResponse(file_path, media_type="text/html")
     elif filename.endswith(".json"):
