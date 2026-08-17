@@ -1,290 +1,56 @@
-"""Rich CLI entry point for DeepRecon."""
+"""Interactive and automated entry point for DeepRecon."""
 
 from __future__ import annotations
 
-import asyncio
-from datetime import datetime, timezone
+import argparse
+import sys
 
 from rich.console import Console
-from rich.panel import Panel
-from rich.prompt import Confirm, IntPrompt, Prompt
-from rich.table import Table
 
-from config import (
-    AI_PROVIDER,
-    CRAWL_DELAY,
-    CRAWL_DEPTH,
-    CRAWL_WORKERS,
-    DB_PATH,
-    MAX_RETRIES,
-    REQUEST_TIMEOUT,
-    TOR_PROXY,
-)
-from core.crawler import AsyncCrawler, crawl_recursive
-from core.search_engines import AsyncMetaSearch
-from core.ai_analyzer import AIAnalyzer
-from core.reporter import ReportGenerator
-from core.searcher import Searcher
+from config import DB_PATH
+from core.wizard import ReconWizard
 from storage.db import DeepReconDB
 from utils.banner import banner
 from utils.logger import configure_logging
-from utils.tor_manager import TorManager, renew_ip
-from utils.validator import is_onion_url, sanitize_url
-
+from utils.tor_manager import TorManager
 
 console = Console()
 
 
-def _timestamp_name(prefix: str) -> str:
-    return f"{prefix}_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}"
-
-
-def _show_banner(tor_manager: TorManager) -> None:
-    banner()
-    current_ip = tor_manager.get_current_ip() or "Offline / Proxy Unreachable"
-    ip_color = "green" if current_ip != "Offline / Proxy Unreachable" else "yellow"
-    console.print(
-        Panel.fit(
-            f"[bold cyan]🕵️ DeepRecon OSINT Intelligence Console[/bold cyan]\n"
-            f"🧅 [bold]Tor Exit IP:[/bold] [{ip_color}]{current_ip}[/{ip_color}]\n"
-            f"💾 [bold]Database:[/bold] [dim]{DB_PATH}[/dim]\n"
-            f"🤖 [bold]AI Provider:[/bold] [magenta]{AI_PROVIDER.upper()}[/magenta]",
-            title="🚀 Active Environment",
-            border_style="cyan",
-        )
-    )
-
-
-
-def _print_sessions(db: DeepReconDB) -> None:
-    sessions = db.list_sessions()
-    table = Table(title="Sessions")
-    table.add_column("ID", style="cyan")
-    table.add_column("Name", style="bold")
-    table.add_column("Seed URL")
-    table.add_column("Status")
-    table.add_column("Started")
-    for session in sessions:
-        table.add_row(
-            str(session["id"]),
-            session["name"],
-            session.get("seed_url") or "",
-            session.get("status") or "",
-            session.get("started_at") or "",
-        )
-    console.print(table)
-
-
-def _crawl_site(db: DeepReconDB) -> int | None:
-    url = sanitize_url(Prompt.ask("Seed URL (.onion or clearnet)"))
-    if is_onion_url(url):
-        console.print("[green]Validated onion target.[/green]")
-    elif not Confirm.ask("Target is not an onion URL. Continue anyway?", default=False):
-        return None
-
-    session_name = Prompt.ask("Session name", default=_timestamp_name("session"))
-    try:
-        session_id = db.create_session(session_name, seed_url=url)
-    except Exception:
-        session_name = _timestamp_name("session")
-        session_id = db.create_session(session_name, seed_url=url)
-
-    crawler = AsyncCrawler(
-        db=db,
-        depth=CRAWL_DEPTH,
-        workers=CRAWL_WORKERS,
-        delay=CRAWL_DELAY,
-        timeout=REQUEST_TIMEOUT,
-        proxy_url=TOR_PROXY,
-        max_retries=MAX_RETRIES,
-    )
-
-    console.print(f"Starting crawl for session [bold]{session_name}[/bold]...")
-    with console.status("Crawling targets...", spinner="dots"):
-        try:
-            asyncio.run(crawler.crawl([url]))
-        except RuntimeError:
-            links = crawl_recursive(url, depth=CRAWL_DEPTH)
-            page_id = db.upsert_page(
-                {
-                    "site_id": db.get_or_create_site(url, title=None),
-                    "session_id": session_id,
-                    "url": url,
-                    "title": url,
-                    "content": "",
-                    "raw_html": "",
-                    "meta": {"links": links},
-                }
-            )
-            if links:
-                db.add_links(page_id, url, [{"target_url": link, "is_internal": True} for link in links])
-
-    console.print(f"[green]Crawl finished for session {session_id}.[/green]")
-    return session_id
-
-
-def _search_pages(db: DeepReconDB) -> None:
-    query = Prompt.ask("Search query")
-    use_regex = Confirm.ask("Treat the query as regex?", default=False)
-    limit = IntPrompt.ask("Max results", default=10)
-
-    if use_regex:
-        searcher = Searcher()
-        pages = db.list_pages()
-        matches = []
-        for page in pages:
-            content = page.get("content") or ""
-            matches.extend(searcher.search_text(content, [query], regex=True))
-        if not matches:
-            console.print("[yellow]No regex matches found.[/yellow]")
-            return
-
-        table = Table(title="Regex Matches")
-        table.add_column("Keyword")
-        table.add_column("Match")
-        table.add_column("Context")
-        for match in matches[:limit]:
-            table.add_row(match.keyword, match.match_text, match.context)
-        console.print(table)
-        return
-
-    results = db.search_pages(query, limit=limit)
-    if not results:
-        console.print("[yellow]No matches found.[/yellow]")
-        return
-
-    table = Table(title="Search Results")
-    table.add_column("URL", style="cyan")
-    table.add_column("Title")
-    table.add_column("Language")
-    table.add_column("Score")
-    for row in results:
-        table.add_row(
-            row.get("url", ""),
-            row.get("title") or "",
-            row.get("language") or "",
-            str(row.get("relevance_score", 0.0)),
-        )
-    console.print(table)
-
-
-def _generate_report(db: DeepReconDB) -> None:
-    session_id = IntPrompt.ask("Session ID")
-    generator = ReportGenerator(db=db)
-    outputs = generator.generate_session_report(session_id)
-    console.print(f"[green]Report written:[/green] {outputs['html']}")
-    console.print(f"[green]JSON written:[/green] {outputs['json']}")
-    if "pdf" in outputs:
-        console.print(f"[green]PDF written:[/green] {outputs['pdf']}")
-
-
-def _run_metasearch(db: DeepReconDB) -> None:
-    query = Prompt.ask("Enter global Dark Web search query")
-    console.print(f"[bold cyan]Dispatching Metasearch Spiders for: '{query}'...[/bold cyan]")
-    
-    meta = AsyncMetaSearch()
-    results = asyncio.run(meta.search(query))
-    
-    if not results:
-        console.print("[yellow]No targets found across dark web search engines.[/yellow]")
-        return
-        
-    table = Table(title=f"Meta-Search Targets for '{query}'")
-    table.add_column("Onion URL", style="cyan")
-    table.add_column("Discovered By Engines", style="magenta")
-    for r in results[:15]:
-        table.add_row(r["url"], ", ".join(r["found_by"]))
-    console.print(table)
-    
-    if Confirm.ask("Load these URLs into a new scan session?"):
-        session_name = _timestamp_name(f"metasearch_{query[:5]}")
-        session_id = db.create_session(session_name, seed_url=f"metasearch:{query}")
-        
-        urls = [r["url"] for r in results[:10]]  # limit to top 10 to be safe
-        crawler = AsyncCrawler(db=db, depth=1)
-        console.print(f"Loading {len(urls)} targets into Tor spider...")
-        asyncio.run(crawler.crawl(urls))
-        console.print("[green]Scan complete.[/green]")
-
-def _ai_summarize_session(db: DeepReconDB) -> None:
-    session_id = IntPrompt.ask("Enter Session ID to Summarize")
-    session = db.get_session(session_id)
-    if not session:
-        console.print("[red]Session not found.[/red]")
-        return
-        
-    pages = db.list_pages(session_id)
-    if not pages:
-        console.print("No data parsed in this session.")
-        return
-        
-    console.print("[bold cyan]Connecting to local AI Analyst (Ollama)...[/bold cyan]")
-    analyzer = AIAnalyzer()
-    
-    for page in pages[:3]: # summarize top 3 domains
-        console.print(f"\nAnalyzing [cyan]{page['url']}[/cyan]...")
-        summary = analyzer.generate_investigation_summary(
-            page['url'], 
-            page.get('content', ''), 
-            page.get('meta', {})
-        )
-        console.print(Panel.fit(summary, title=f"AI Output: {page['title'][:30]}", border_style="green"))
-
-
 def main() -> None:
-    """Run the interactive DeepRecon CLI or Web UI."""
-    import argparse
-    parser = argparse.ArgumentParser(description="DeepRecon OSINT Framework")
-    parser.add_argument("--web", action="store_true", help="Launch the Web UI")
-    parser.add_argument("--cli", action="store_true", help="Launch the interactive CLI (default)")
-    parser.add_argument("--host", default="127.0.0.1", help="Host for Web UI")
-    parser.add_argument("--port", type=int, default=8000, help="Port for Web UI")
-    args = parser.parse_args()
+    """Entry point for DeepRecon CLI, Guided Wizard, or Web UI."""
+    parser = argparse.ArgumentParser(
+        description="🕵️ DeepRecon - Autonomous Dark Web Reconnaissance & AI Threat Triage",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""Examples:
+  deeprecon                      # Launch Interactive Guided Wizard (Default)
+  deeprecon --web                # Launch Cyber Command Web UI Dashboard
+  deeprecon --web --port 8080    # Launch Web UI on custom port
+  deeprecon --wizard             # Explicit interactive wizard launch
+  deeprecon --cli                # Classic menu CLI mode
+        """,
+    )
+    parser.add_argument("--web", action="store_true", help="Launch the Web UI Dashboard")
+    parser.add_argument("--wizard", "--interactive", "-i", action="store_true", help="Launch the Interactive Guided Wizard (default)")
+    parser.add_argument("--cli", action="store_true", help="Launch classic menu CLI mode")
+    parser.add_argument("--host", default="127.0.0.1", help="Host address for Web UI (default: 127.0.0.1)")
+    parser.add_argument("--port", type=int, default=8000, help="Port for Web UI (default: 8000)")
 
+    args = parser.parse_args()
     configure_logging()
-    
-    if args.web and not args.cli:
-        console.print(f"[bold green]Starting Web UI at http://{args.host}:{args.port}[/bold green]")
+
+    if args.web:
+        console.print(f"\n[bold green]🚀 Launching DeepRecon Cyber Command Web UI at http://{args.host}:{args.port}[/bold green]")
+        console.print("[dim]Press Ctrl+C to stop server[/dim]\n")
         import uvicorn
         uvicorn.run("web.app:app", host=args.host, port=args.port, reload=False)
         return
 
     db = DeepReconDB(DB_PATH)
-    tor_manager = TorManager()
-    _show_banner(tor_manager)
+    wizard = ReconWizard(db=db)
 
-    while True:
-        console.print("\n[bold cyan]1[/bold cyan] Crawl direct target")
-        console.print("[bold cyan]2[/bold cyan] Global Dark Web Meta-Search (Multi-Engine)")
-        console.print("[bold cyan]3[/bold cyan] Search stored pages locally")
-        console.print("[bold cyan]4[/bold cyan] Generate AI Analysis on Session")
-        console.print("[bold cyan]5[/bold cyan] Renew Tor IP")
-        console.print("[bold cyan]6[/bold cyan] Generate session report")
-        console.print("[bold cyan]7[/bold cyan] List sessions")
-        console.print("[bold cyan]8[/bold cyan] Exit")
-
-        choice = Prompt.ask("Select an option", choices=["1", "2", "3", "4", "5", "6", "7", "8"])
-
-        if choice == "1":
-            _crawl_site(db)
-        elif choice == "2":
-            _run_metasearch(db)
-        elif choice == "3":
-            _search_pages(db)
-        elif choice == "4":
-            _ai_summarize_session(db)
-        elif choice == "5":
-            if renew_ip():
-                console.print("[green]Tor identity renewal requested.[/green]")
-            else:
-                console.print("[red]Unable to renew Tor identity.[/red]")
-        elif choice == "6":
-            _generate_report(db)
-        elif choice == "7":
-            _print_sessions(db)
-        elif choice == "8":
-            console.print("Exiting DeepRecon.")
-            break
+    # Default to Interactive Guided Wizard
+    wizard.run()
 
 
 if __name__ == "__main__":
