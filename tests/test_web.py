@@ -48,3 +48,20 @@ def test_api_tor_renew():
     data = response.json()
     assert "success" in data
     assert "tor_ip" in data
+
+
+def test_api_stop_scan():
+    client = TestClient(app)
+    response = client.post("/api/scan/1/stop")
+    assert response.status_code == 200
+    data = response.json()
+    assert data.get("success") is True
+
+
+def test_api_stop_all_scans():
+    client = TestClient(app)
+    response = client.post("/api/scan/stop")
+    assert response.status_code == 200
+    data = response.json()
+    assert data.get("success") is True
+

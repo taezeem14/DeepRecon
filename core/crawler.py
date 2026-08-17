@@ -85,6 +85,15 @@ class AsyncCrawler:
         self.bypass_robots = bypass_robots
         self.max_retries = max(1, max_retries)
         self.rate_limiter = RateLimiter(self.delay)
+        self._stop_requested = False
+        self._worker_tasks: list[asyncio.Task] = []
+
+    def stop(self) -> None:
+        """Signal the crawler to abort active crawling workers immediately."""
+        self._stop_requested = True
+        for task in self._worker_tasks:
+            if not task.done():
+                task.cancel()
 
     async def crawl(self, seeds: list[str]) -> list[PageData]:
         """Crawl a list of seed URLs and persist discovered pages."""
@@ -112,14 +121,17 @@ class AsyncCrawler:
             await queue.put((normalized, self.depth, _site_root(normalized)))
 
         async with aiohttp.ClientSession(timeout=timeout, connector=connector) as session:
-            workers = [
+            self._worker_tasks = [
                 asyncio.create_task(self._worker(session, queue, visited, results))
                 for _ in range(self.workers)
             ]
-            await queue.join()
-            for _ in workers:
+            try:
+                await queue.join()
+            except asyncio.CancelledError:
+                pass
+            for _ in self._worker_tasks:
                 await queue.put(("", 0, ""))
-            await asyncio.gather(*workers, return_exceptions=True)
+            await asyncio.gather(*self._worker_tasks, return_exceptions=True)
 
         return results
 
@@ -130,10 +142,13 @@ class AsyncCrawler:
         visited: set[str],
         results: list[PageData],
     ) -> None:
-        while True:
-            url, depth, site_root = await queue.get()
+        while not self._stop_requested:
             try:
-                if not url:
+                url, depth, site_root = await queue.get()
+            except asyncio.CancelledError:
+                return
+            try:
+                if not url or self._stop_requested:
                     return
                 if url in visited or depth < 0:
                     continue
@@ -142,6 +157,8 @@ class AsyncCrawler:
                 page = await self._fetch_and_store(session, url, depth, site_root, queue, visited)
                 if page is not None:
                     results.append(page)
+            except asyncio.CancelledError:
+                return
             finally:
                 queue.task_done()
 

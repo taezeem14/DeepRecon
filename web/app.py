@@ -56,6 +56,8 @@ db = DeepReconDB(DB_PATH)
 tor_manager = TorManager()
 ai_analyzer = AIAnalyzer()
 
+ACTIVE_CRAWLERS: dict[int, AsyncCrawler] = {}
+
 
 def _crawl_background_job(
     seed_urls: list[str],
@@ -75,18 +77,21 @@ def _crawl_background_job(
         proxy_url=TOR_PROXY,
         max_retries=MAX_RETRIES,
     )
+    ACTIVE_CRAWLERS[session_id] = crawler
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
         results = loop.run_until_complete(crawler.crawl(seed_urls))
-        LOGGER.info("Crawl completed for session %d: %d pages found", session_id, len(results))
+        final_status = "stopped" if crawler._stop_requested else "completed"
+        LOGGER.info("Crawl finished for session %d (%s): %d pages found", session_id, final_status, len(results))
         with db._connect() as conn:
-            conn.execute("UPDATE sessions SET status = 'completed' WHERE id = ?", (session_id,))
+            conn.execute("UPDATE sessions SET status = ? WHERE id = ?", (final_status, session_id))
     except Exception as exc:
         LOGGER.error("Crawl error in background job: %s", exc)
         with db._connect() as conn:
             conn.execute("UPDATE sessions SET status = 'failed' WHERE id = ?", (session_id,))
     finally:
+        ACTIVE_CRAWLERS.pop(session_id, None)
         loop.close()
 
 
@@ -266,6 +271,32 @@ async def api_start_scan(
             "message": f"Async reconnaissance swarm dispatched for {target_url}",
         }
     )
+
+
+@app.post("/api/scan/{session_id}/stop")
+async def api_stop_scan(session_id: int):
+    """Abort an active reconnaissance crawl swarm."""
+    crawler = ACTIVE_CRAWLERS.get(session_id)
+    if crawler:
+        crawler.stop()
+        with db._connect() as conn:
+            conn.execute("UPDATE sessions SET status = 'stopped' WHERE id = ?", (session_id,))
+        return JSONResponse({"success": True, "message": f"Recon swarm for session #{session_id} abort signal sent."})
+
+    with db._connect() as conn:
+        conn.execute("UPDATE sessions SET status = 'stopped' WHERE id = ?", (session_id,))
+    return JSONResponse({"success": True, "message": f"Session #{session_id} marked as stopped."})
+
+
+@app.post("/api/scan/stop")
+async def api_stop_all_scans():
+    """Abort all currently running crawl swarms."""
+    count = len(ACTIVE_CRAWLERS)
+    for sid, crawler in list(ACTIVE_CRAWLERS.items()):
+        crawler.stop()
+        with db._connect() as conn:
+            conn.execute("UPDATE sessions SET status = 'stopped' WHERE id = ?", (sid,))
+    return JSONResponse({"success": True, "stopped_count": count, "message": f"Aborted {count} active crawl(s)."})
 
 
 @app.post("/api/metasearch")

@@ -652,9 +652,14 @@
                         <input type="hidden" id="recon-workers" value="5">
                         <input type="hidden" id="recon-delay" value="1.5">
 
-                        <button type="submit" class="btn-primary" id="btn-dispatch-recon">
-                            <i class="fa-solid fa-paper-plane"></i> Dispatch SOCKS5 Crawler Swarm
-                        </button>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="submit" class="btn-primary" id="btn-dispatch-recon" style="flex-grow: 1;">
+                                <i class="fa-solid fa-paper-plane"></i> Dispatch SOCKS5 Crawler Swarm
+                            </button>
+                            <button type="button" class="btn-primary" id="btn-stop-recon" onclick="stopActiveCrawl()" style="display: none; background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #fff; width: auto; padding: 0 24px;">
+                                <i class="fa-solid fa-stop"></i> Abort Swarm
+                            </button>
+                        </div>
                     </form>
                 </div>
 
@@ -662,7 +667,12 @@
                 <div class="cyber-panel">
                     <div class="panel-header">
                         <h2 class="panel-title"><i class="fa-solid fa-terminal"></i> Tactical Activity Stream</h2>
-                        <button class="btn-secondary mono" onclick="clearConsoleLog()"><i class="fa-solid fa-trash-can"></i> Clear</button>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="btn-secondary mono" id="btn-stream-stop" style="display: none; color: var(--accent-rose); border-color: rgba(244, 63, 94, 0.4);" onclick="stopActiveCrawl()">
+                                <i class="fa-solid fa-stop"></i> Stop Scan
+                            </button>
+                            <button class="btn-secondary mono" onclick="clearConsoleLog()"><i class="fa-solid fa-trash-can"></i> Clear</button>
+                        </div>
                     </div>
 
                     <div class="terminal-box" id="terminal-stream">
@@ -1277,8 +1287,62 @@
         }
 
         // -------------------------------------------------------------
-        // Recon Swarm Handler
+        // Recon Swarm Handler & Active Crawl Control
         // -------------------------------------------------------------
+        let activeCrawlSessionId = null;
+        let activePollInterval = null;
+
+        function setCrawlRunningState(isRunning, sessionId = null) {
+            const btnDispatch = document.getElementById('btn-dispatch-recon');
+            const btnStop = document.getElementById('btn-stop-recon');
+            const btnStreamStop = document.getElementById('btn-stream-stop');
+
+            if (isRunning) {
+                activeCrawlSessionId = sessionId;
+                if (btnDispatch) {
+                    btnDispatch.disabled = true;
+                    btnDispatch.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Swarm Active (Crawling Target...)';
+                }
+                if (btnStop) btnStop.style.display = 'inline-flex';
+                if (btnStreamStop) btnStreamStop.style.display = 'inline-flex';
+            } else {
+                activeCrawlSessionId = null;
+                if (btnDispatch) {
+                    btnDispatch.disabled = false;
+                    btnDispatch.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Dispatch SOCKS5 Crawler Swarm';
+                }
+                if (btnStop) btnStop.style.display = 'none';
+                if (btnStreamStop) btnStreamStop.style.display = 'none';
+            }
+        }
+
+        async function stopActiveCrawl(sessionId = null) {
+            const sid = sessionId || activeCrawlSessionId;
+            logTerminal(`[ABORT] Sending stop signal to active crawler...`);
+
+            try {
+                let resp;
+                if (sid) {
+                    resp = await fetch(`/api/scan/${sid}/stop`, { method: 'POST' });
+                } else {
+                    resp = await fetch('/api/scan/stop', { method: 'POST' });
+                }
+                const data = await resp.json();
+                showToast(data.message || 'Crawl stopped.', '<i class="fa-solid fa-stop"></i>');
+                logTerminal(`[ABORT] ${data.message || 'Crawl aborted.'}`);
+
+                if (activePollInterval) {
+                    clearInterval(activePollInterval);
+                    activePollInterval = null;
+                }
+                setCrawlRunningState(false);
+                await refreshSystemData(true);
+                await refreshSessionsTable();
+            } catch (err) {
+                showToast('Failed to send stop signal', '<i class="fa-solid fa-xmark"></i>');
+            }
+        }
+
         async function handleReconSubmit(e) {
             e.preventDefault();
             const url = document.getElementById('recon-url').value.trim();
@@ -1287,10 +1351,7 @@
             const workers = document.getElementById('recon-workers').value;
             const delay = document.getElementById('recon-delay').value;
 
-            const btn = document.getElementById('btn-dispatch-recon');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Dispatching Crawler Swarm...';
-
+            setCrawlRunningState(true);
             logTerminal(`[DISPATCH] Launching crawl on target: ${url} (Depth: ${depth}, Workers: ${workers})`);
 
             try {
@@ -1307,43 +1368,109 @@
                 if (resp.ok) {
                     showToast(`Recon swarm deployed for session #${data.session_id}!`, '<i class="fa-solid fa-paper-plane"></i>');
                     logTerminal(`[SUCCESS] Crawl initiated! Session ID: ${data.session_id} (${data.session_name})`);
-                    refreshSystemData();
+                    setCrawlRunningState(true, data.session_id);
+                    await refreshSystemData(true);
+                    await refreshSessionsTable();
                     pollCrawlStatus(data.session_id);
                 } else {
                     showToast(data.detail || 'Failed to dispatch scan', '<i class="fa-solid fa-xmark"></i>');
                     logTerminal(`[ERROR] Dispatch failed: ${data.detail}`);
+                    setCrawlRunningState(false);
                 }
             } catch (err) {
                 showToast('Network error while dispatching scan', '<i class="fa-solid fa-xmark"></i>');
                 logTerminal(`[ERROR] Request failed: ${err}`);
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Dispatch SOCKS5 Crawler Swarm';
+                setCrawlRunningState(false);
             }
         }
 
         function pollCrawlStatus(sessionId) {
-            const interval = setInterval(async () => {
+            if (activePollInterval) clearInterval(activePollInterval);
+
+            activePollInterval = setInterval(async () => {
                 try {
                     const resp = await fetch(`/api/sessions/${sessionId}`);
                     const data = await resp.json();
                     const session = data.session;
                     const pageCount = data.pages ? data.pages.length : 0;
                     logTerminal(`[CRAWL] Session #${sessionId}: ${session.status} — ${pageCount} pages indexed so far`);
-                    
-                    if (session.status === 'completed' || session.status === 'failed') {
-                        clearInterval(interval);
+
+                    // Live update KPI metrics and session table dynamically
+                    await refreshSystemData(true);
+                    await refreshSessionsTable();
+
+                    if (session.status === 'completed' || session.status === 'failed' || session.status === 'stopped') {
+                        clearInterval(activePollInterval);
+                        activePollInterval = null;
+                        setCrawlRunningState(false);
+
                         if (session.status === 'completed') {
                             showToast(`Crawl complete! ${pageCount} pages indexed.`, '<i class="fa-solid fa-check-double"></i>');
+                            logTerminal(`[COMPLETED] Session #${sessionId} finished successfully with ${pageCount} pages indexed.`);
+                        } else if (session.status === 'stopped') {
+                            showToast(`Crawl stopped. Indexed ${pageCount} pages.`, '<i class="fa-solid fa-stop"></i>');
+                            logTerminal(`[STOPPED] Session #${sessionId} stopped by operator (${pageCount} pages preserved).`);
                         } else {
-                            showToast('Crawl failed — check if target is reachable', '<i class="fa-solid fa-triangle-exclamation"></i>');
+                            showToast('Crawl ended — 0 reachable pages or timeout', '<i class="fa-solid fa-triangle-exclamation"></i>');
+                            logTerminal(`[NOTICE] Session #${sessionId} ended with 0 pages.`);
                         }
-                        refreshSystemData();
                     }
                 } catch (err) {
-                    clearInterval(interval);
+                    console.error('Polling error:', err);
                 }
             }, 3000);
+        }
+
+        async function refreshSessionsTable() {
+            try {
+                const resp = await fetch('/api/sessions');
+                const data = await resp.json();
+                const tbody = document.getElementById('sessions-table-body');
+                if (!tbody) return;
+
+                const badge = document.getElementById('session-count-badge');
+                if (badge) badge.innerText = `${data.sessions.length} Sessions`;
+
+                if (data.sessions && data.sessions.length > 0) {
+                    tbody.innerHTML = '';
+                    data.sessions.forEach(s => {
+                        const tr = document.createElement('tr');
+                        let statusBadge = '';
+                        if (s.status === 'completed') {
+                            statusBadge = `<span class="badge badge-emerald mono"><i class="fa-solid fa-circle-check"></i> completed (${s.page_count}p)</span>`;
+                        } else if (s.status === 'stopped') {
+                            statusBadge = `<span class="badge badge-amber mono"><i class="fa-solid fa-hand"></i> stopped (${s.page_count}p)</span>`;
+                        } else if (s.status === 'failed') {
+                            statusBadge = `<span class="badge badge-rose mono"><i class="fa-solid fa-triangle-exclamation"></i> failed</span>`;
+                        } else {
+                            statusBadge = `<span class="badge badge-cyan mono"><i class="fa-solid fa-spinner fa-spin"></i> active (${s.page_count}p)</span>`;
+                        }
+
+                        const stopBtn = (s.status === 'active')
+                            ? `<button class="btn-secondary mono" style="color:var(--accent-rose); border-color:rgba(244,63,94,0.3); margin-left:6px;" onclick="stopActiveCrawl(${s.id})"><i class="fa-solid fa-stop"></i> Stop</button>`
+                            : '';
+
+                        tr.innerHTML = `
+                            <td class="mono" style="color: var(--accent-cyan); font-weight: 700;">#${s.id}</td>
+                            <td style="font-weight: 600; color: #fff;">${s.name}</td>
+                            <td class="mono text-dim" style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                ${s.seed_url || "Direct Crawl"}
+                            </td>
+                            <td>${statusBadge}</td>
+                            <td class="mono text-dim">${s.started_at ? s.started_at.substring(0, 16) : "-"}</td>
+                            <td>
+                                <button class="btn-secondary mono" onclick="inspectSession(${s.id})">
+                                    <i class="fa-solid fa-magnifying-glass-chart"></i> Inspect
+                                </button>
+                                ${stopBtn}
+                            </td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+            } catch (err) {
+                console.error('Failed to refresh sessions table:', err);
+            }
         }
 
         // Rotate Tor Circuit
@@ -1645,24 +1772,50 @@
         }
 
         // Telemetry Refresher
-        async function refreshSystemData() {
+        async function refreshSystemData(silent = false) {
             try {
                 const resp = await fetch('/api/status');
                 const data = await resp.json();
-                document.getElementById('kpi-pages').innerText = data.metrics.total_pages;
-                document.getElementById('kpi-links').innerText = data.metrics.total_links;
-                document.getElementById('kpi-keywords').innerText = data.metrics.total_keywords;
-                document.getElementById('kpi-sessions').innerText = data.metrics.total_sessions;
-                document.getElementById('tor-ip-display').innerText = data.tor.exit_ip;
-                showToast('Telemetry refreshed', '<i class="fa-solid fa-bolt"></i>');
+                if (data.metrics) {
+                    const pagesEl = document.getElementById('kpi-pages');
+                    const linksEl = document.getElementById('kpi-links');
+                    const keysEl = document.getElementById('kpi-keywords');
+                    const sessEl = document.getElementById('kpi-sessions');
+                    const torIpEl = document.getElementById('tor-ip-display');
+
+                    if (pagesEl) pagesEl.innerText = data.metrics.total_pages;
+                    if (linksEl) linksEl.innerText = data.metrics.total_links;
+                    if (keysEl) keysEl.innerText = data.metrics.total_keywords;
+                    if (sessEl) sessEl.innerText = data.metrics.total_sessions;
+                    if (torIpEl && data.tor) torIpEl.innerText = data.tor.exit_ip;
+                }
+                if (!silent) {
+                    showToast('Telemetry refreshed', '<i class="fa-solid fa-bolt"></i>');
+                }
             } catch (err) {
                 console.error(err);
             }
         }
 
-        // Initialize IndexedDB on page load
-        document.addEventListener('DOMContentLoaded', () => {
-            initIndexedDB();
+        // Initialize on page load: IndexedDB, Live Sessions, and auto-resume polling if active
+        document.addEventListener('DOMContentLoaded', async () => {
+            await initIndexedDB();
+            await refreshSystemData(true);
+            await refreshSessionsTable();
+
+            // Auto-detect if any session is currently running and resume live polling
+            try {
+                const resp = await fetch('/api/sessions');
+                const data = await resp.json();
+                const activeSession = data.sessions?.find(s => s.status === 'active');
+                if (activeSession) {
+                    setCrawlRunningState(true, activeSession.id);
+                    logTerminal(`[RESUME] Active crawl swarm detected on Session #${activeSession.id} (${activeSession.name}). Resuming live stream...`);
+                    pollCrawlStatus(activeSession.id);
+                }
+            } catch (err) {
+                console.error('Failed to auto-detect active sessions:', err);
+            }
         });
     </script>
 </body>
