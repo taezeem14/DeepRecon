@@ -41,3 +41,6 @@ def get_logger(name: str = "DeepRecon") -> logging.Logger:
 
     configure_logging()
     return logging.getLogger(name)
+
+
+logger = get_logger("DeepRecon")

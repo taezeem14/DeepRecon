@@ -1,21 +1,10 @@
-"""Compatibility wrapper that exposes Tor helpers from utils."""
+"""Tor session and circuit management compatibility layer.
 
-from utils.tor_manager import TorManager, get_session, renew_ip
+Re-exports core Tor capabilities from utils.tor_manager.
+"""
 
-__all__ = ["TorManager", "get_session", "renew_ip"]import requests
-from stem import Signal
-from stem.control import Controller
-from config import TOR_SOCKS_PROXY, TOR_CONTROL_PORT, TOR_CONTROL_PASSWORD
+from __future__ import annotations
 
-def renew_ip():
-    with Controller.from_port(port=TOR_CONTROL_PORT) as controller:
-        controller.authenticate(password=TOR_CONTROL_PASSWORD)
-        controller.signal(Signal.NEWNYM)
+from utils.tor_manager import TorManager, TorStatus, get_session, renew_ip
 
-def get_session():
-    session = requests.Session()
-    session.proxies = {
-        'http': TOR_SOCKS_PROXY,
-        'https': TOR_SOCKS_PROXY
-    }
-    return session
+__all__ = ["TorManager", "TorStatus", "get_session", "renew_ip"]

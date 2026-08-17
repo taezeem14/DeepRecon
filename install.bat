@@ -1,31 +1,42 @@
 @echo off
 setlocal enabledelayedexpansion
 
+echo ===================================================
+echo   🕵️‍♂️ DeepRecon - OSINT Framework Setup
+echo ===================================================
+echo.
 echo Installing DeepRecon dependencies on Windows...
 
-where py >nul 2>&1
+where python >nul 2>&1
 if errorlevel 1 (
-    echo Python launcher not found. Install Python 3.x first.
+    echo [ERROR] Python launcher not found. Install Python 3.10+ first.
     pause
     exit /b 1
 )
 
-py -3 -m pip install --upgrade pip
-py -3 -m pip install -r requirements.txt
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
 
 echo.
-echo Install the Tor Expert Bundle separately:
-echo https://www.torproject.org/download/tor/
-echo Then run tor.exe before starting DeepRecon.
+echo ---------------------------------------------------
+echo  [IMPORTANT] Tor Network Configuration
+echo ---------------------------------------------------
+echo  Download the Tor Expert Bundle or Tor Browser:
+echo  https://www.torproject.org/download/tor/
+echo  Ensure tor.exe is running on port 9050 before crawling.
+echo ---------------------------------------------------
 echo.
 
-echo Creating deeprecon.bat wrapper...
+echo Creating deeprecon.bat CLI launcher...
 (
 echo @echo off
-echo py -3 "%~dp0main.py" %%*
-) > deeprecon.bat
+echo python "%%~dp0main.py" %%*
+) > "%~dp0deeprecon.bat"
 
-echo Installation complete.
-echo You can run the tool by calling: deeprecon --cli OR deeprecon --web
-echo (Make sure this directory is in your PATH to call it from anywhere)
+echo.
+echo [SUCCESS] DeepRecon setup complete!
+echo Launch options:
+echo   1. Interactive CLI: deeprecon --cli   (or python main.py)
+echo   2. Web Dashboard:   deeprecon --web   (or python main.py --web)
+echo.
 pause

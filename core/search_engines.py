@@ -6,11 +6,20 @@ import asyncio
 import re
 from typing import Any
 
-import aiohttp
-from aiohttp_socks import ProxyConnector
+try:
+    import aiohttp
+except ImportError:
+    aiohttp = None
+
+try:
+    from aiohttp_socks import ProxyConnector
+except ImportError:
+    ProxyConnector = None
 
 from config import USER_AGENT, REQUEST_TIMEOUT, TOR_PROXY
-from utils.logger import logger
+from utils.logger import get_logger
+
+LOGGER = get_logger(__name__)
 
 
 # DeepWeb Search Engines curated for intelligence gathering
@@ -28,6 +37,7 @@ SEARCH_ENGINES = [
     {"name": "OSS", "url": "http://3fzh7yuupdfyjhwt3ugzqqof6ulbcl27ecev33knxe3u7goi3vfn2qqd.onion/oss/index.php?search={query}"},
 ]
 
+
 class AsyncMetaSearch:
     """Async metasearch across multiple dark web search engines."""
 
@@ -36,29 +46,34 @@ class AsyncMetaSearch:
         self.headers = {"User-Agent": USER_AGENT}
 
     async def fetch_results(self, session: aiohttp.ClientSession, engine: dict[str, str], query: str) -> list[dict[str, str]]:
+        if aiohttp is None:
+            return []
         url = engine["url"].format(query=query)
         links = []
         try:
             async with session.get(url, timeout=aiohttp.ClientTimeout(total=REQUEST_TIMEOUT)) as response:
                 if response.status == 200:
                     html = await response.text()
-                    # Generic heuristic to rip onion URLs from search engines without loading full BS4
+                    # Generic regex to rip onion URLs from search engines
                     raw_urls = re.findall(r'https?:\/\/[a-z0-9\.]+\.onion[^\s"\'<]*', html)
                     for raw in raw_urls:
-                        # simple filter
                         if "search" not in raw and "onionland" not in raw:
                             links.append({"engine": engine["name"], "url": raw})
-                    logger.debug(f"[{engine['name']}] Found {len(links)} links for '{query}'.")
+                    LOGGER.debug(f"[{engine['name']}] Found {len(links)} links for '{query}'.")
         except Exception as e:
-            logger.debug(f"[{engine['name']}] Failed: {str(e)}")
+            LOGGER.debug(f"[{engine['name']}] Search failed: {e}")
             
         return links
 
     async def search(self, query: str) -> list[dict[str, str]]:
         """Asynchronously perform a meta-search and deduplicate results."""
-        logger.info(f"Initiating meta-search across {len(SEARCH_ENGINES)} search engines for '{query}'...")
+        if aiohttp is None:
+            LOGGER.warning("aiohttp is not installed; async meta-search is unavailable")
+            return []
+
+        LOGGER.info(f"Initiating meta-search across {len(SEARCH_ENGINES)} search engines for '{query}'...")
         
-        connector = ProxyConnector.from_url(self.proxy_url) if self.proxy_url else None
+        connector = ProxyConnector.from_url(self.proxy_url) if (self.proxy_url and ProxyConnector is not None) else None
         
         results = []
         async with aiohttp.ClientSession(connector=connector, headers=self.headers) as session:
@@ -70,13 +85,13 @@ class AsyncMetaSearch:
                     results.extend(res)
                     
         # Deduplication mapping URL to engines that found them
-        deduped = {}
+        deduped: dict[str, list[str]] = {}
         for r in results:
             url = r["url"].rstrip("/")
             if url not in deduped:
                 deduped[url] = []
             deduped[url].append(r["engine"])
             
-        final_results = [{"url": k, "found_by": list(set(v))} for k, v in deduped.items()]
-        logger.info(f"Meta-search completed. {len(final_results)} unique onion services found.")
+        final_results = [{"url": k, "found_by": sorted(list(set(v)))} for k, v in deduped.items()]
+        LOGGER.info(f"Meta-search completed. {len(final_results)} unique onion services found.")
         return final_results

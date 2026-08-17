@@ -10,13 +10,23 @@ from rich.panel import Panel
 from rich.prompt import Confirm, IntPrompt, Prompt
 from rich.table import Table
 
-from config import CRAWL_DELAY, CRAWL_DEPTH, CRAWL_WORKERS, DB_PATH, MAX_RETRIES, REQUEST_TIMEOUT, TOR_PROXY
+from config import (
+    AI_PROVIDER,
+    CRAWL_DELAY,
+    CRAWL_DEPTH,
+    CRAWL_WORKERS,
+    DB_PATH,
+    MAX_RETRIES,
+    REQUEST_TIMEOUT,
+    TOR_PROXY,
+)
 from core.crawler import AsyncCrawler, crawl_recursive
 from core.search_engines import AsyncMetaSearch
 from core.ai_analyzer import AIAnalyzer
 from core.reporter import ReportGenerator
 from core.searcher import Searcher
 from storage.db import DeepReconDB
+from utils.banner import banner
 from utils.logger import configure_logging
 from utils.tor_manager import TorManager, renew_ip
 from utils.validator import is_onion_url, sanitize_url
@@ -30,14 +40,20 @@ def _timestamp_name(prefix: str) -> str:
 
 
 def _show_banner(tor_manager: TorManager) -> None:
-    current_ip = tor_manager.get_current_ip() or "unknown"
+    banner()
+    current_ip = tor_manager.get_current_ip() or "Offline / Proxy Unreachable"
+    ip_color = "green" if current_ip != "Offline / Proxy Unreachable" else "yellow"
     console.print(
         Panel.fit(
-            f"[bold]DeepRecon[/bold]\nTor IP: {current_ip}\nDatabase: {DB_PATH}",
-            title="DeepRecon",
+            f"[bold cyan]🕵️ DeepRecon OSINT Intelligence Console[/bold cyan]\n"
+            f"🧅 [bold]Tor Exit IP:[/bold] [{ip_color}]{current_ip}[/{ip_color}]\n"
+            f"💾 [bold]Database:[/bold] [dim]{DB_PATH}[/dim]\n"
+            f"🤖 [bold]AI Provider:[/bold] [magenta]{AI_PROVIDER.upper()}[/magenta]",
+            title="🚀 Active Environment",
             border_style="cyan",
         )
     )
+
 
 
 def _print_sessions(db: DeepReconDB) -> None:
