@@ -16,6 +16,8 @@ from typing import Any, Iterable, Iterator, Sequence
 
 from storage.models import KeywordHit, Link, Page, Report
 
+_VALID_TABLES = frozenset({"sites", "sessions", "pages", "links", "keywords_found", "reports"})
+
 
 class DeepReconDB:
     """High-level SQLite wrapper used by the crawler, search, and reporter."""
@@ -424,6 +426,8 @@ class DeepReconDB:
 
         destination_path = Path(destination)
         destination_path.parent.mkdir(parents=True, exist_ok=True)
+        if table_name not in _VALID_TABLES:
+            raise ValueError(f"Invalid table name: {table_name!r}")
         with self._connect() as connection:
             rows = connection.execute(f"SELECT * FROM {table_name}").fetchall()
 
@@ -443,6 +447,8 @@ class DeepReconDB:
     def count_rows(self, table_name: str) -> int:
         """Return the number of rows in a table."""
 
+        if table_name not in _VALID_TABLES:
+            raise ValueError(f"Invalid table name: {table_name!r}")
         with self._connect() as connection:
             row = connection.execute(f"SELECT COUNT(*) AS count FROM {table_name}").fetchone()
         return int(row["count"]) if row else 0

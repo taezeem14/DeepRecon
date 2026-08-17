@@ -8,8 +8,10 @@ from typing import Any
 import requests
 
 try:
+    from stem import Signal
     from stem.control import Controller
 except ImportError:  # pragma: no cover - optional dependency
+    Signal = None
     Controller = None
 
 from config import (
@@ -110,7 +112,7 @@ class TorManager:
         try:
             with Controller.from_port(port=self.control_port) as controller:
                 self._authenticate(controller)
-                controller.signal("NEWNYM")
+                controller.signal(Signal.NEWNYM)
             self._requests_since_renewal = 0
             return True
         except Exception as exc:  # pragma: no cover - tor dependent

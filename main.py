@@ -213,7 +213,7 @@ def _ai_summarize_session(db: DeepReconDB) -> None:
         console.print("[red]Session not found.[/red]")
         return
         
-    pages = db.get_session_pages(session_id)
+    pages = db.list_pages(session_id)
     if not pages:
         console.print("No data parsed in this session.")
         return

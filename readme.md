@@ -37,7 +37,7 @@
 ## 🎯 Capabilities Radar
 
 <div align="center">
-  <img src="assets/capabilities_radar.svg" alt="DeepRecon Capability Radar Chart" width="750">
+  <img src="https://quickchart.io/chart/render/zf-d83ff8b6-18e4-4b11-b1d5-e0341a795040" alt="DeepRecon Capability Radar Chart" width="750">
 </div>
 
 ---
@@ -62,7 +62,7 @@
 How does DeepRecon stack up against traditional crawlers? DeepRecon utilizes asynchronous I/O and non-blocking SOCKS5 multiplexing to yield up to **10x higher node discovery throughput**:
 
 <div align="center">
-  <img src="assets/benchmark_chart.svg" alt="Benchmark Speed Chart" width="750">
+  <img src="https://quickchart.io/chart/render/zf-5454db70-02f8-419c-a231-3033794185d2" alt="Benchmark Speed Chart" width="750">
 </div>
 
 ---
@@ -72,7 +72,7 @@ How does DeepRecon stack up against traditional crawlers? DeepRecon utilizes asy
 DeepRecon queries multiple curated onion search indexes concurrently to identify live services across disparate networks:
 
 <div align="center">
-  <img src="assets/search_engines_coverage.svg" alt="Search Engines Coverage Chart" width="750">
+  <img src="https://quickchart.io/chart/render/zf-9beb9cbe-85d7-479a-8ed3-337a2a65fbb6" alt="Search Engines Coverage Chart" width="750">
 </div>
 
 ---
@@ -82,7 +82,7 @@ DeepRecon queries multiple curated onion search indexes concurrently to identify
 Each scanned onion node passes through a sub-millisecond decoupled intelligence pipeline:
 
 <div align="center">
-  <img src="assets/pipeline_latency.svg" alt="Pipeline Latency Chart" width="750">
+  <img src="https://quickchart.io/chart/render/zf-8b7b877c-ee3b-48d6-9ba7-040aaeb88898" alt="Pipeline Latency Chart" width="750">
 </div>
 
 
