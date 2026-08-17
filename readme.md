@@ -37,7 +37,7 @@
 ## 🎯 Capabilities Radar
 
 <div align="center">
-  <img src="https://quickchart.io/chart?bkg=%230b0f19&w=700&h=380&c=%7B%22type%22%3A%20%22radar%22%2C%20%22data%22%3A%20%7B%22labels%22%3A%20%5B%22Dark%20Web%20Crawling%22%2C%20%22AI%20Threat%20Triage%22%2C%20%22Async%20SOCKS5%20Speed%22%2C%20%22Crypto%20Sniffing%22%2C%20%22Tech%20Fingerprinting%22%2C%20%22OPSEC%20Circuits%22%5D%2C%20%22datasets%22%3A%20%5B%7B%22label%22%3A%20%22DeepRecon%20v3.2%20%28Goated%20%5Cu26a1%29%22%2C%20%22backgroundColor%22%3A%20%22rgba%280%2C242%2C254%2C0.35%29%22%2C%20%22borderColor%22%3A%20%22%2300f2fe%22%2C%20%22pointBackgroundColor%22%3A%20%22%2300f2fe%22%2C%20%22data%22%3A%20%5B98%2C%2094%2C%2099%2C%2092%2C%2090%2C%2096%5D%7D%2C%20%7B%22label%22%3A%20%22Legacy%20Scrapers%20%28Mid%20%5Cud83d%5Cudc80%29%22%2C%20%22backgroundColor%22%3A%20%22rgba%28239%2C68%2C68%2C0.2%29%22%2C%20%22borderColor%22%3A%20%22%23ef4444%22%2C%20%22pointBackgroundColor%22%3A%20%22%23ef4444%22%2C%20%22data%22%3A%20%5B45%2C%2015%2C%2030%2C%2055%2C%2048%2C%2035%5D%7D%5D%7D%2C%20%22options%22%3A%20%7B%22title%22%3A%20%7B%22display%22%3A%20true%2C%20%22text%22%3A%20%22DeepRecon%20OSINT%20Capability%20Vectors%22%2C%20%22fontColor%22%3A%20%22%2300f2fe%22%2C%20%22fontSize%22%3A%2015%7D%2C%20%22legend%22%3A%20%7B%22labels%22%3A%20%7B%22fontColor%22%3A%20%22%23e2e8f0%22%2C%20%22fontSize%22%3A%2012%7D%7D%2C%20%22scale%22%3A%20%7B%22gridLines%22%3A%20%7B%22color%22%3A%20%22rgba%28255%2C255%2C255%2C0.12%29%22%7D%2C%20%22angleLines%22%3A%20%7B%22color%22%3A%20%22rgba%28255%2C255%2C255%2C0.18%29%22%7D%2C%20%22pointLabels%22%3A%20%7B%22fontColor%22%3A%20%22%2338bdf8%22%2C%20%22fontSize%22%3A%2011%2C%20%22fontStyle%22%3A%20%22bold%22%7D%2C%20%22ticks%22%3A%20%7B%22backdropColor%22%3A%20%22transparent%22%2C%20%22fontColor%22%3A%20%22%2394a3b8%22%2C%20%22min%22%3A%200%2C%20%22max%22%3A%20100%2C%20%22stepSize%22%3A%2020%7D%7D%7D%7D" alt="DeepRecon Capability Radar Chart" width="700">
+  <img src="assets/capabilities_radar.svg" alt="DeepRecon Capability Radar Chart" width="750">
 </div>
 
 ---
@@ -62,7 +62,7 @@
 How does DeepRecon stack up against traditional crawlers? DeepRecon utilizes asynchronous I/O and non-blocking SOCKS5 multiplexing to yield up to **10x higher node discovery throughput**:
 
 <div align="center">
-  <img src="https://quickchart.io/chart?bkg=%230b0f19&w=700&h=380&c=%7B%22type%22%3A%20%22bar%22%2C%20%22data%22%3A%20%7B%22labels%22%3A%20%5B%22DeepRecon%20%28Async%29%22%2C%20%22Scrapy-Tor%22%2C%20%22Threaded%20SOCKS%22%2C%20%22Requests-Seq%22%2C%20%22Legacy%20PyScraper%22%5D%2C%20%22datasets%22%3A%20%5B%7B%22label%22%3A%20%22Pages%20Crawled%20/%20Minute%20%28Throughput%29%22%2C%20%22backgroundColor%22%3A%20%5B%22%2300f2fe%22%2C%20%22%23a855f7%22%2C%20%22%233b82f6%22%2C%20%22%23f59e0b%22%2C%20%22%23ef4444%22%5D%2C%20%22borderWidth%22%3A%201%2C%20%22borderColor%22%3A%20%22%23ffffff%22%2C%20%22data%22%3A%20%5B420%2C%20185%2C%20120%2C%2038%2C%2015%5D%7D%5D%7D%2C%20%22options%22%3A%20%7B%22title%22%3A%20%7B%22display%22%3A%20true%2C%20%22text%22%3A%20%22Speed%20Benchmark%3A%20Onion%20Nodes%20Crawled%20/%20Minute%22%2C%20%22fontColor%22%3A%20%22%2300f2fe%22%2C%20%22fontSize%22%3A%2015%7D%2C%20%22legend%22%3A%20%7B%22display%22%3A%20false%7D%2C%20%22scales%22%3A%20%7B%22xAxes%22%3A%20%5B%7B%22ticks%22%3A%20%7B%22fontColor%22%3A%20%22%23e2e8f0%22%2C%20%22fontSize%22%3A%2011%2C%20%22fontStyle%22%3A%20%22bold%22%7D%2C%20%22gridLines%22%3A%20%7B%22color%22%3A%20%22rgba%28255%2C255%2C255%2C0.06%29%22%7D%7D%5D%2C%20%22yAxes%22%3A%20%5B%7B%22ticks%22%3A%20%7B%22fontColor%22%3A%20%22%2394a3b8%22%2C%20%22beginAtZero%22%3A%20true%7D%2C%20%22gridLines%22%3A%20%7B%22color%22%3A%20%22rgba%28255%2C255%2C255%2C0.08%29%22%7D%7D%5D%7D%7D%7D" alt="Benchmark Speed Chart" width="700">
+  <img src="assets/benchmark_chart.svg" alt="Benchmark Speed Chart" width="750">
 </div>
 
 ---
@@ -72,7 +72,7 @@ How does DeepRecon stack up against traditional crawlers? DeepRecon utilizes asy
 DeepRecon queries multiple curated onion search indexes concurrently to identify live services across disparate networks:
 
 <div align="center">
-  <img src="https://quickchart.io/chart?bkg=%230b0f19&w=700&h=380&c=%7B%22type%22%3A%20%22doughnut%22%2C%20%22data%22%3A%20%7B%22labels%22%3A%20%5B%22Ahmia%20%2822%25%29%22%2C%20%22OnionLand%20%2818%25%29%22%2C%20%22Torch%20%2815%25%29%22%2C%20%22Kaizer%20%2812%25%29%22%2C%20%22Amnesia%20%2810%25%29%22%2C%20%22Anima%20%288%25%29%22%2C%20%22Find%20Tor%20%286%25%29%22%2C%20%22TorNet%20%284%25%29%22%2C%20%22Others%20%285%25%29%22%5D%2C%20%22datasets%22%3A%20%5B%7B%22data%22%3A%20%5B22%2C%2018%2C%2015%2C%2012%2C%2010%2C%208%2C%206%2C%204%2C%205%5D%2C%20%22backgroundColor%22%3A%20%5B%22%2300f2fe%22%2C%20%22%2338bdf8%22%2C%20%22%23818cf8%22%2C%20%22%23a855f7%22%2C%20%22%23ec4899%22%2C%20%22%23f43f5e%22%2C%20%22%23fb923c%22%2C%20%22%23facc15%22%2C%20%22%234ade80%22%5D%2C%20%22borderWidth%22%3A%202%2C%20%22borderColor%22%3A%20%22%230b0f19%22%7D%5D%7D%2C%20%22options%22%3A%20%7B%22title%22%3A%20%7B%22display%22%3A%20true%2C%20%22text%22%3A%20%22Multi-Engine%20Dark%20Web%20Coverage%20Distribution%22%2C%20%22fontColor%22%3A%20%22%2300f2fe%22%2C%20%22fontSize%22%3A%2015%7D%2C%20%22legend%22%3A%20%7B%22position%22%3A%20%22right%22%2C%20%22labels%22%3A%20%7B%22fontColor%22%3A%20%22%23e2e8f0%22%2C%20%22fontSize%22%3A%2011%7D%7D%7D%7D" alt="Search Engines Coverage Chart" width="700">
+  <img src="assets/search_engines_coverage.svg" alt="Search Engines Coverage Chart" width="750">
 </div>
 
 ---
@@ -82,8 +82,9 @@ DeepRecon queries multiple curated onion search indexes concurrently to identify
 Each scanned onion node passes through a sub-millisecond decoupled intelligence pipeline:
 
 <div align="center">
-  <img src="https://quickchart.io/chart?bkg=%230b0f19&w=700&h=380&c=%7B%22type%22%3A%20%22horizontalBar%22%2C%20%22data%22%3A%20%7B%22labels%22%3A%20%5B%221.%20Metasearch%20Ingest%22%2C%20%222.%20SOCKS5%20Async%20Fetch%22%2C%20%223.%20Plugin%20Extraction%22%2C%20%224.%20AI%20Threat%20Synthesis%22%2C%20%225.%20FTS5%20DB%20Indexing%22%2C%20%226.%20Report%20Generation%22%5D%2C%20%22datasets%22%3A%20%5B%7B%22label%22%3A%20%22Pipeline%20Stage%20Latency%20%28ms%29%22%2C%20%22backgroundColor%22%3A%20%5B%22%2300f2fe%22%2C%20%22%2338bdf8%22%2C%20%22%23818cf8%22%2C%20%22%23a855f7%22%2C%20%22%23ec4899%22%2C%20%22%234ade80%22%5D%2C%20%22data%22%3A%20%5B45%2C%20180%2C%2025%2C%20320%2C%2012%2C%2035%5D%7D%5D%7D%2C%20%22options%22%3A%20%7B%22title%22%3A%20%7B%22display%22%3A%20true%2C%20%22text%22%3A%20%22Investigation%20Pipeline%20Stage%20Latency%20%28ms/node%29%22%2C%20%22fontColor%22%3A%20%22%2338bdf8%22%2C%20%22fontSize%22%3A%2014%7D%2C%20%22legend%22%3A%20%7B%22display%22%3A%20false%7D%2C%20%22scales%22%3A%20%7B%22xAxes%22%3A%20%5B%7B%22ticks%22%3A%20%7B%22fontColor%22%3A%20%22%2394a3b8%22%2C%20%22beginAtZero%22%3A%20true%7D%2C%20%22gridLines%22%3A%20%7B%22color%22%3A%20%22rgba%28255%2C255%2C255%2C0.06%29%22%7D%7D%5D%2C%20%22yAxes%22%3A%20%5B%7B%22ticks%22%3A%20%7B%22fontColor%22%3A%20%22%23e2e8f0%22%2C%20%22fontSize%22%3A%2011%2C%20%22fontStyle%22%3A%20%22bold%22%7D%2C%20%22gridLines%22%3A%20%7B%22color%22%3A%20%22rgba%28255%2C255%2C255%2C0.06%29%22%7D%7D%5D%7D%7D%7D" alt="Pipeline Latency Chart" width="700">
+  <img src="assets/pipeline_latency.svg" alt="Pipeline Latency Chart" width="750">
 </div>
+
 
 ### Codebase Organization
 

@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 420" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b0f19"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="420" rx="16" fill="url(#bgGrad3)" stroke="#1e293b" stroke-width="2"/>
+  
+  <text x="400.0" y="42" fill="#00f2fe" font-family="system-ui, sans-serif" font-size="18" font-weight="800" text-anchor="middle" letter-spacing="0.5">
+    🧅 MULTI-ENGINE DARK WEB COVERAGE DISTRIBUTION
+  </text>
+  <text x="400.0" y="64" fill="#94a3b8" font-family="system-ui, sans-serif" font-size="12" text-anchor="middle">
+    Asynchronous Dark Web Search Index Footprint
+  </text>
+
+  <path d="M 260.0 95.0 A 135 135 0 0 1 392.6 204.7 L 333.7 215.9 A 75 75 0 0 0 260.0 155.0 Z" fill="#00f2fe" stroke="#0b0f19" stroke-width="2.5"/>
+<path d="M 392.6 204.7 A 135 135 0 0 1 339.4 339.2 L 304.1 290.7 A 75 75 0 0 0 333.7 215.9 Z" fill="#38bdf8" stroke="#0b0f19" stroke-width="2.5"/>
+<path d="M 339.4 339.2 A 135 135 0 0 1 218.3 358.4 L 236.8 301.3 A 75 75 0 0 0 304.1 290.7 Z" fill="#818cf8" stroke="#0b0f19" stroke-width="2.5"/>
+<path d="M 218.3 358.4 A 135 135 0 0 1 141.7 295.0 L 194.3 266.1 A 75 75 0 0 0 236.8 301.3 Z" fill="#a855f7" stroke="#0b0f19" stroke-width="2.5"/>
+<path d="M 141.7 295.0 A 135 135 0 0 1 126.1 213.1 L 185.6 220.6 A 75 75 0 0 0 194.3 266.1 Z" fill="#ec4899" stroke="#0b0f19" stroke-width="2.5"/>
+<path d="M 126.1 213.1 A 135 135 0 0 1 150.8 150.6 L 199.3 185.9 A 75 75 0 0 0 185.6 220.6 Z" fill="#f43f5e" stroke="#0b0f19" stroke-width="2.5"/>
+<path d="M 150.8 150.6 A 135 135 0 0 1 187.7 116.0 L 219.8 166.7 A 75 75 0 0 0 199.3 185.9 Z" fill="#fb923c" stroke="#0b0f19" stroke-width="2.5"/>
+<path d="M 187.7 116.0 A 135 135 0 0 1 218.3 101.6 L 236.8 158.7 A 75 75 0 0 0 219.8 166.7 Z" fill="#facc15" stroke="#0b0f19" stroke-width="2.5"/>
+<path d="M 218.3 101.6 A 135 135 0 0 1 260.0 95.0 L 260.0 155.0 A 75 75 0 0 0 236.8 158.7 Z" fill="#4ade80" stroke="#0b0f19" stroke-width="2.5"/>
+
+  
+  <!-- Center Donut Text -->
+  <text x="260" y="226" fill="#00f2fe" font-family="system-ui, sans-serif" font-size="20" font-weight="800" text-anchor="middle">11 ENGINES</text>
+  <text x="260" y="246" fill="#94a3b8" font-family="system-ui, sans-serif" font-size="11" text-anchor="middle">Concurrent Meta</text>
+
+  
+    <rect x="480" y="130" width="14" height="14" rx="3" fill="#00f2fe"/>
+    <text x="502" y="141" fill="#e2e8f0" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Ahmia</text>
+    <text x="502" y="155" fill="#94a3b8" font-family="system-ui, sans-serif" font-size="10">22% share</text>
+
+    <rect x="480" y="175" width="14" height="14" rx="3" fill="#38bdf8"/>
+    <text x="502" y="186" fill="#e2e8f0" font-family="system-ui, sans-serif" font-size="12" font-weight="600">OnionLand</text>
+    <text x="502" y="200" fill="#94a3b8" font-family="system-ui, sans-serif" font-size="10">18% share</text>
+
+    <rect x="480" y="220" width="14" height="14" rx="3" fill="#818cf8"/>
+    <text x="502" y="231" fill="#e2e8f0" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Torch</text>
+    <text x="502" y="245" fill="#94a3b8" font-family="system-ui, sans-serif" font-size="10">15% share</text>
+
+    <rect x="480" y="265" width="14" height="14" rx="3" fill="#a855f7"/>
+    <text x="502" y="276" fill="#e2e8f0" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Kaizer</text>
+    <text x="502" y="290" fill="#94a3b8" font-family="system-ui, sans-serif" font-size="10">12% share</text>
+
+    <rect x="480" y="310" width="14" height="14" rx="3" fill="#ec4899"/>
+    <text x="502" y="321" fill="#e2e8f0" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Amnesia</text>
+    <text x="502" y="335" fill="#94a3b8" font-family="system-ui, sans-serif" font-size="10">10% share</text>
+
+    <rect x="630" y="130" width="14" height="14" rx="3" fill="#f43f5e"/>
+    <text x="652" y="141" fill="#e2e8f0" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Anima</text>
+    <text x="652" y="155" fill="#94a3b8" font-family="system-ui, sans-serif" font-size="10">8% share</text>
+
+    <rect x="630" y="175" width="14" height="14" rx="3" fill="#fb923c"/>
+    <text x="652" y="186" fill="#e2e8f0" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Find Tor</text>
+    <text x="652" y="200" fill="#94a3b8" font-family="system-ui, sans-serif" font-size="10">6% share</text>
+
+    <rect x="630" y="220" width="14" height="14" rx="3" fill="#facc15"/>
+    <text x="652" y="231" fill="#e2e8f0" font-family="system-ui, sans-serif" font-size="12" font-weight="600">TorNet</text>
+    <text x="652" y="245" fill="#94a3b8" font-family="system-ui, sans-serif" font-size="10">4% share</text>
+
+    <rect x="630" y="265" width="14" height="14" rx="3" fill="#4ade80"/>
+    <text x="652" y="276" fill="#e2e8f0" font-family="system-ui, sans-serif" font-size="12" font-weight="600">Others</text>
+    <text x="652" y="290" fill="#94a3b8" font-family="system-ui, sans-serif" font-size="10">5% share</text>
+
+</svg>
