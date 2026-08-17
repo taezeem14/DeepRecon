@@ -73,7 +73,8 @@ class AsyncMetaSearch:
 
         LOGGER.info(f"Initiating meta-search across {len(SEARCH_ENGINES)} search engines for '{query}'...")
         
-        connector = ProxyConnector.from_url(self.proxy_url) if (self.proxy_url and ProxyConnector is not None) else None
+        proxy = self.proxy_url.replace("socks5h://", "socks5://") if self.proxy_url else None
+        connector = ProxyConnector.from_url(proxy) if (proxy and ProxyConnector is not None) else None
         
         results = []
         async with aiohttp.ClientSession(connector=connector, headers=self.headers) as session:

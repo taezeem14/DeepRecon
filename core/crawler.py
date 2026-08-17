@@ -96,7 +96,8 @@ class AsyncCrawler:
         connector = None
         has_onion = any('.onion' in seed.lower() for seed in seeds)
         if has_onion and self.proxy_url and ProxyConnector is not None:
-            connector = ProxyConnector.from_url(self.proxy_url)
+            proxy = self.proxy_url.replace("socks5h://", "socks5://")
+            connector = ProxyConnector.from_url(proxy)
         elif has_onion and ProxyConnector is None:
             LOGGER.error("aiohttp_socks not installed; cannot crawl .onion URLs")
             return []
@@ -227,6 +228,8 @@ class AsyncCrawler:
         return None
 
     def _allowed_by_robots(self, url: str) -> bool:
+        if ".onion" in url.lower():
+            return True
         parsed = urlparse(url)
         robots_url = urlunparse((parsed.scheme, parsed.netloc, "/robots.txt", "", "", ""))
         parser = urllib.robotparser.RobotFileParser()
