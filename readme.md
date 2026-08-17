@@ -115,31 +115,31 @@ DeepRecon/
 
 ## 💻 CLI Terminal Preview
 
-```ansi
-[36m██████╗ ███████╗███████╗██████╗ ██████╗ ███████╗ ██████╗ ███╗   ██╗
-██╔══██╗██╔════╝██╔════╝██╔══██╗██╔══██╗██╔════╝██╔═══██╗████╗  ██║
-██║  ██║█████╗  █████╗  ██████╔╝██████╔╝█████╗  ██║   ██║██╔██╗ ██║
-██║  ██║██╔══╝  ██╔══╝  ██╔═══╝ ██╔══██╗██╔══╝  ██║   ██║██║╚██╗██║
-██████╔╝███████╗███████╗██║     ██║  ██║███████╗╚██████╔╝██║ ╚████║
-╚═════╝ ╚══════╝╚══════╝╚═╝     ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═══╝[0m
+```
+ ██████╗ ███████╗███████╗██████╗ ██████╗ ███████╗ ██████╗ ███╗   ██╗
+ ██╔══██╗██╔════╝██╔════╝██╔══██╗██╔══██╗██╔════╝██╔═══██╗████╗  ██║
+ ██║  ██║█████╗  █████╗  ██████╔╝██████╔╝█████╗  ██║   ██║██╔██╗ ██║
+ ██║  ██║██╔══╝  ██╔══╝  ██╔═══╝ ██╔══██╗██╔══╝  ██║   ██║██║╚██╗██║
+ ██████╔╝███████╗███████╗██║     ██║  ██║███████╗╚██████╔╝██║ ╚████║
+ ╚═════╝ ╚══════╝╚══════╝╚═╝     ╚═╝  ╚═╝╚══════╝ ╚═════╝ ╚═╝  ╚═══╝
 
-[35m⚡ Autonomous Dark Web OSINT & Intelligence Framework (v3.2.0)[0m
+ ⚡ Autonomous Dark Web OSINT & Intelligence Framework (v3.2.0)
 
-╭─────────────────────── 🚀 Active Environment ───────────────────────╮
-│ 🕵️ DeepRecon OSINT Intelligence Console                              │
-│ 🧅 Tor Exit IP: 185.220.101.5 (Secure Tor Circuit)                  │
-│ 💾 Database: storage/deeprecon.db                                    │
-│ 🤖 AI Provider: OLLAMA (Llama3)                                      │
-╰─────────────────────────────────────────────────────────────────────╯
+ ╭─────────────────────── 🚀 Active Environment ───────────────────────╮
+ │ 🕵️  DeepRecon OSINT Intelligence Console                             │
+ │ 🧅  Tor Exit IP: 185.220.101.5 (Secure Tor Circuit)                  │
+ │ 💾  Database: storage/deeprecon.db                                    │
+ │ 🤖  AI Provider: OLLAMA (Llama3)                                      │
+ ╰──────────────────────────────────────────────────────────────────────╯
 
-1 Crawl direct target (.onion or clearnet)
-2 Global Dark Web Meta-Search (11 Search Engines)
-3 Search stored pages locally (FTS5 BM25 Engine)
-4 Generate AI Threat Analysis on Session
-5 Renew Tor IP (NEWNYM Signal)
-6 Generate session report (HTML / JSON / PDF)
-7 List sessions
-8 Exit
+ 1  Crawl direct target (.onion or clearnet)
+ 2  Global Dark Web Meta-Search (11 Search Engines)
+ 3  Search stored pages locally (FTS5 BM25 Engine)
+ 4  Generate AI Threat Analysis on Session
+ 5  Renew Tor IP (NEWNYM Signal)
+ 6  Generate session report (HTML / JSON / PDF)
+ 7  List sessions
+ 8  Exit
 ```
 
 ---
@@ -264,12 +264,17 @@ Contributions make open source goated! Feel free to submit PRs for new search en
 
 ---
 
-## 🌟 Star History
+## 🌟 Support the Project
 
 <div align="center">
-  <a href="https://star-history.com/#taezeem14/DeepRecon&Date">
-    <img src="https://api.star-history.com/svg?repos=taezeem14/DeepRecon&type=Date&theme=dark" alt="Star History Chart" width="700">
-  </a>
+  <a href="https://github.com/taezeem14/DeepRecon/stargazers"><img src="https://img.shields.io/github/stars/taezeem14/DeepRecon?style=for-the-badge&logo=github&color=00f2fe&logoColor=white&label=Stars" alt="Stars"></a>
+  &nbsp;
+  <a href="https://github.com/taezeem14/DeepRecon/network/members"><img src="https://img.shields.io/github/forks/taezeem14/DeepRecon?style=for-the-badge&logo=git&color=a855f7&logoColor=white&label=Forks" alt="Forks"></a>
+  &nbsp;
+  <a href="https://github.com/taezeem14/DeepRecon/watchers"><img src="https://img.shields.io/github/watchers/taezeem14/DeepRecon?style=for-the-badge&logo=eye&color=38bdf8&logoColor=white&label=Watchers" alt="Watchers"></a>
+
+  <br><br>
+  <b>If DeepRecon helped your research, smash that ⭐ — it keeps the project alive and motivates new features!</b>
 </div>
 
 ---
