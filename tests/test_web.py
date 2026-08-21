@@ -116,3 +116,35 @@ def test_api_purge_sessions():
     assert purge_resp.json()["success"] is True
 
 
+def test_api_probe():
+    client = TestClient(app)
+    # Test probing an invalid / unreachable test onion
+    resp = client.post("/api/probe", data={"url": "http://invalidnonexistentonionhost999.onion"})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert "online" in data
+    assert "url" in data
+    assert "latency_ms" in data
+
+
+def test_api_topology_graph():
+    client = TestClient(app)
+    # Create a test session
+    resp = client.post("/api/scan", data={"url": "http://graphtestonionhost123.onion", "session_name": "TEST_GRAPH_SESSION"})
+    assert resp.status_code == 200
+    sid = resp.json()["session_id"]
+
+    # Fetch topology graph
+    graph_resp = client.get(f"/api/sessions/{sid}/graph")
+    assert graph_resp.status_code == 200
+    gdata = graph_resp.json()
+    assert "nodes" in gdata
+    assert "links" in gdata
+    assert len(gdata["nodes"]) >= 1  # At least the seed node
+    assert gdata["nodes"][0]["type"] == "seed"
+
+    # Cleanup
+    client.delete(f"/api/sessions/{sid}")
+
+
+

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import os
+import re
 import time
 from pathlib import Path
 from typing import Any
@@ -27,6 +28,7 @@ from config import (
     REPORTS_PATH,
     REQUEST_TIMEOUT,
     TOR_PROXY,
+    USER_AGENT,
 )
 from core.ai_analyzer import AIAnalyzer
 from core.crawler import AsyncCrawler
@@ -352,6 +354,137 @@ async def api_metasearch(query: str = Form(...)):
             "results": results,
         }
     )
+
+
+@app.post("/api/probe")
+async def api_probe_target(url: str = Form(...)):
+    """Fast lightweight connectivity and OPSEC probe for a dark web / clearnet target."""
+    target_url = sanitize_url(url.strip())
+    if not target_url:
+        raise HTTPException(status_code=400, detail="Invalid target URL")
+
+    start_time = time.time()
+    proxies = None
+    if ".onion" in target_url.lower() and TOR_PROXY:
+        proxies = {"http": TOR_PROXY, "https": TOR_PROXY}
+
+    try:
+        # Fast streaming probe with 8s timeout
+        response = requests.get(
+            target_url,
+            headers={"User-Agent": USER_AGENT},
+            proxies=proxies,
+            timeout=8,
+            stream=True,
+        )
+        latency_ms = int((time.time() - start_time) * 1000)
+        chunk = next(response.iter_content(chunk_size=16384), b"")
+        html = chunk.decode("utf-8", errors="ignore")
+
+        title_match = re.search(r"<title[^>]*>(.*?)</title>", html, re.IGNORECASE | re.DOTALL)
+        title = title_match.group(1).strip() if title_match else "No Title Found"
+
+        return JSONResponse(
+            {
+                "success": True,
+                "url": target_url,
+                "online": True,
+                "status_code": response.status_code,
+                "latency_ms": latency_ms,
+                "server": response.headers.get("Server", "Hidden / Generic"),
+                "content_type": response.headers.get("Content-Type", "text/html"),
+                "title": title[:100],
+            }
+        )
+    except Exception as exc:
+        latency_ms = int((time.time() - start_time) * 1000)
+        err_msg = str(exc).split(":")[-1].strip() or "Connection timed out / unreachable"
+        return JSONResponse(
+            {
+                "success": False,
+                "url": target_url,
+                "online": False,
+                "status_code": 0,
+                "latency_ms": latency_ms,
+                "error": err_msg,
+            }
+        )
+
+
+@app.get("/api/sessions/{session_id}/graph")
+async def api_get_session_graph(session_id: int):
+    """Return lightweight nodes and edges graph for 2D Canvas Topology visualization."""
+    session = db.get_session(session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    pages = db.list_pages(session_id)
+    seed_url = session.get("seed_url") or f"Session #{session_id}"
+
+    nodes = []
+    links = []
+    seen_nodes = set()
+
+    # Root Seed Node
+    root_id = "root_seed"
+    nodes.append({
+        "id": root_id,
+        "label": seed_url if len(seed_url) <= 30 else f"{seed_url[:28]}...",
+        "full_label": seed_url,
+        "type": "seed",
+        "size": 18,
+        "color": "#00f2fe",
+    })
+    seen_nodes.add(root_id)
+
+    for p in pages[:50]:  # Cap at 50 nodes for zero lag on 128MB GPUs
+        p_id = f"p_{p['id']}"
+        if p_id not in seen_nodes:
+            lbl = p.get("title") or p["url"]
+            nodes.append({
+                "id": p_id,
+                "label": lbl if len(lbl) <= 24 else f"{lbl[:22]}...",
+                "full_label": p["url"],
+                "url": p["url"],
+                "type": "page",
+                "size": 11,
+                "color": "#10b981",
+            })
+            seen_nodes.add(p_id)
+            links.append({"source": root_id, "target": p_id, "color": "rgba(0, 242, 254, 0.35)"})
+
+        meta = p.get("meta") or {}
+        crypto = meta.get("crypto_addresses") or meta.get("crypto") or {}
+        for coin, addrs in crypto.items():
+            for addr in addrs[:2]:
+                c_id = f"c_{addr[:12]}"
+                if c_id not in seen_nodes:
+                    nodes.append({
+                        "id": c_id,
+                        "label": f"{coin.upper()[:3]}: {addr[:8]}..",
+                        "full_label": addr,
+                        "type": "crypto",
+                        "size": 8,
+                        "color": "#f59e0b",
+                    })
+                    seen_nodes.add(c_id)
+                links.append({"source": p_id, "target": c_id, "color": "rgba(245, 158, 11, 0.4)"})
+
+        for email in meta.get("emails", [])[:2]:
+            e_id = f"e_{email}"
+            if e_id not in seen_nodes:
+                nodes.append({
+                    "id": e_id,
+                    "label": email if len(email) <= 20 else f"{email[:18]}..",
+                    "full_label": email,
+                    "type": "email",
+                    "size": 8,
+                    "color": "#a855f7",
+                })
+                seen_nodes.add(e_id)
+            links.append({"source": p_id, "target": e_id, "color": "rgba(168, 85, 247, 0.4)"})
+
+    return JSONResponse({"session_id": session_id, "nodes": nodes, "links": links})
 
 
 @app.post("/api/ai_analyze")

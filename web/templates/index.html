@@ -572,6 +572,32 @@
             text-shadow: 0 0 8px var(--accent-cyan);
         }
 
+        /* Low-Spec 128MB GPU Performance Overrides */
+        body.low-spec-mode {
+            --shadow-glow: none !important;
+            --shadow-card: 0 4px 6px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        body.low-spec-mode * {
+            box-shadow: none !important;
+            text-shadow: none !important;
+            filter: none !important;
+            backdrop-filter: none !important;
+            transition: none !important;
+            animation-duration: 0.001s !important;
+        }
+
+        body.low-spec-mode .brand-text h1 {
+            background: none !important;
+            -webkit-text-fill-color: var(--accent-cyan) !important;
+            color: var(--accent-cyan) !important;
+        }
+
+        body.low-spec-mode .pulse-dot {
+            animation: none !important;
+            opacity: 1 !important;
+        }
+
         /* Toast Notifications */
         #toast-container {
             position: fixed;
@@ -594,7 +620,7 @@
             align-items: center;
             gap: 12px;
             font-size: 0.85rem;
-            animation: slideIn 0.3s ease;
+            animation: slideIn 0.25s ease;
         }
 
         @keyframes slideIn {
@@ -611,6 +637,159 @@
         @media (max-width: 1024px) {
             .layout-split { grid-template-columns: 1fr; }
         }
+
+        /* Table Filter Toolbar */
+        .table-filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+            background: var(--bg-base);
+            padding: 10px 14px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .filter-input {
+            flex-grow: 1;
+            min-width: 180px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+        }
+
+        .filter-select {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-main);
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+        }
+
+        /* Quick Probe Widget */
+        .probe-widget {
+            background: var(--bg-base);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 16px 20px;
+            margin-bottom: 24px;
+        }
+
+        .probe-status-card {
+            margin-top: 14px;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            font-size: 0.8rem;
+        }
+
+        /* Topology Canvas HUD */
+        #topology-canvas-container {
+            position: relative;
+            width: 100%;
+            height: 560px;
+            background: radial-gradient(circle at center, #0c1527 0%, #050811 100%);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+
+        #topology-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            cursor: grab;
+        }
+
+        #topology-canvas:active {
+            cursor: grabbing;
+        }
+
+        .topology-hud-toolbar {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+            background: rgba(12, 18, 32, 0.9);
+            padding: 6px 10px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .topology-legend {
+            position: absolute;
+            bottom: 16px;
+            left: 16px;
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+            background: rgba(12, 18, 32, 0.9);
+            padding: 8px 14px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-subtle);
+            font-size: 0.75rem;
+        }
+
+        .topology-node-inspector {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 280px;
+            background: rgba(12, 18, 32, 0.95);
+            border: 1px solid var(--border-highlight);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            z-index: 10;
+            display: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+        }
+
+        /* Modal Dialogs */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-highlight);
+            border-radius: var(--radius-lg);
+            max-width: 600px;
+            width: 100%;
+            padding: 24px 28px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
+        }
+
+        .shortcut-badge {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: var(--accent-cyan);
+            font-family: 'JetBrains Mono', monospace;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
@@ -620,12 +799,27 @@
             <div class="brand-cluster">
                 <i class="fa-solid fa-user-secret brand-icon"></i>
                 <div class="brand-text">
-                    <h1>DeepRecon <span class="version-badge mono">v3.2.0</span></h1>
-                    <p>Next-Gen Autonomous Dark Web OSINT, SOCKS5 Multiplexing & AI Threat Triage</p>
+                    <h1>DeepRecon <span class="version-badge mono">v3.3.0</span></h1>
+                    <p>Autonomous Dark Web Intelligence, SOCKS5 Multiplexing & Low-Spec Zero-Lag Core</p>
                 </div>
             </div>
 
             <div class="hud-status-group">
+                <!-- 128MB GPU Mode Toggle -->
+                <button class="btn-mini-action mono" id="btn-toggle-lowspec" onclick="toggleLowSpecMode()" title="Toggle Low-Spec 128MB GPU Optimization Mode">
+                    <i class="fa-solid fa-microchip"></i> <span id="lowspec-text">128MB GPU Mode</span>
+                </button>
+
+                <!-- Audio FX Toggle -->
+                <button class="btn-mini-action mono" id="btn-toggle-audio" onclick="toggleAudioFX()" title="Toggle Tactical Cyber Audio">
+                    <i class="fa-solid fa-volume-xmark" id="audio-icon"></i>
+                </button>
+
+                <!-- Keyboard Shortcuts Help -->
+                <button class="btn-mini-action mono" onclick="openShortcutsModal()" title="Keyboard Shortcuts Matrix (?)">
+                    <i class="fa-solid fa-keyboard"></i>
+                </button>
+
                 <div class="hud-pill" id="tor-hud-status">
                     <span class="pulse-dot {% if 'Offline' in tor_ip %}offline{% endif %}" id="tor-pulse"></span>
                     <span class="text-dim">Tor Exit:</span>
@@ -658,6 +852,9 @@
         <nav class="nav-ribbon">
             <button class="nav-tab active" onclick="switchTab('mission-control')">
                 <i class="fa-solid fa-satellite-dish"></i> Mission Control
+            </button>
+            <button class="nav-tab" onclick="switchTab('topology')">
+                <i class="fa-solid fa-diagram-project"></i> Topology Graph
             </button>
             <button class="nav-tab" onclick="switchTab('metasearch')">
                 <i class="fa-solid fa-spider"></i> Dark Web Meta-Search
@@ -750,6 +947,21 @@
                                 <i class="fa-solid fa-stop"></i> Abort Swarm
                             </button>
                         </div>
+
+                        <!-- Quick Target Probe Sub-Panel -->
+                        <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border-subtle);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <label class="form-label" style="margin-bottom: 0;"><i class="fa-solid fa-satellite"></i> Quick Target Ping & OPSEC Probe</label>
+                                <span class="badge badge-emerald mono text-xs">8s Fast Ping</span>
+                            </div>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="probe-url-input" class="form-input mono" placeholder="Test onion or clearnet host online status..." style="font-size: 0.8rem;">
+                                <button type="button" class="btn-secondary mono" id="btn-run-probe" onclick="runQuickProbe()" style="width: auto; padding: 0 16px; white-space: nowrap;">
+                                    <i class="fa-solid fa-satellite-dish"></i> Probe
+                                </button>
+                            </div>
+                            <div id="probe-result-container" style="display: none; margin-top: 10px;"></div>
+                        </div>
                     </form>
                 </div>
 
@@ -766,7 +978,7 @@
                     </div>
 
                     <div class="terminal-box" id="terminal-stream">
-                        <div class="terminal-line"><span class="terminal-timestamp">[SYSTEM READY]</span> DeepRecon v3.2.0 OSINT Core Initialized.</div>
+                        <div class="terminal-line"><span class="terminal-timestamp">[SYSTEM READY]</span> DeepRecon v3.3.0 OSINT Core Initialized.</div>
                         <div class="terminal-line"><span class="terminal-timestamp">[OPSEC]</span> Tor circuit active on SOCKS5 127.0.0.1:9050.</div>
                         <div class="terminal-line"><span class="terminal-timestamp">[INDEXEDDB]</span> Secure client storage database initialized.</div>
                         <div class="terminal-line"><span class="terminal-timestamp">[STORAGE]</span> SQLite FTS5 BM25 search index active.</div>
@@ -779,6 +991,28 @@
                 <div class="panel-header">
                     <h2 class="panel-title"><i class="fa-solid fa-folder-tree"></i> Recorded Reconnaissance Sessions</h2>
                     <span class="badge badge-purple mono" id="session-count-badge">{{ sessions|length }} Sessions</span>
+                </div>
+
+                <!-- Live Search & Filter Bar -->
+                <div class="table-filter-bar">
+                    <input type="text" id="session-search-filter" class="filter-input mono" placeholder="Search sessions by codename, target URL, or ID..." oninput="filterSessionsTable()">
+                    <select id="session-status-filter" class="filter-select mono" onchange="filterSessionsTable()">
+                        <option value="all">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="completed">Completed</option>
+                        <option value="stopped">Stopped</option>
+                        <option value="failed">Failed</option>
+                    </select>
+                    <select id="session-threat-filter" class="filter-select mono" onchange="filterSessionsTable()">
+                        <option value="all">All Threat Levels</option>
+                        <option value="CRITICAL">Critical Threat</option>
+                        <option value="HIGH">High Threat</option>
+                        <option value="MEDIUM">Medium Threat</option>
+                        <option value="LOW">Low Threat</option>
+                    </select>
+                    <button class="btn-mini-action" onclick="document.getElementById('session-search-filter').value=''; document.getElementById('session-status-filter').value='all'; document.getElementById('session-threat-filter').value='all'; filterSessionsTable();" title="Reset Filters">
+                        <i class="fa-solid fa-rotate-left"></i> Reset
+                    </button>
                 </div>
 
                 <div class="table-responsive">
@@ -848,6 +1082,61 @@
         </div>
 
         <!-- ================================================================= -->
+        <!-- TAB: NETWORK TOPOLOGY GRAPH (Canvas 2D, 60 FPS, Low-Spec Mode) -->
+        <!-- ================================================================= -->
+        <div id="tab-topology" class="tab-content">
+            <div class="cyber-panel">
+                <div class="panel-header">
+                    <div>
+                        <h2 class="panel-title"><i class="fa-solid fa-diagram-project"></i> Dark Web Network Topology & Artifacts Graph</h2>
+                        <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 2px;">High-velocity 2D Canvas link graph optimized for integrated GPUs (drag, zoom & inspect nodes)</p>
+                    </div>
+                    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                        <select id="topology-session-selector" class="form-select mono" style="font-size: 0.8rem; padding: 6px 12px;" onchange="loadTopologyForSession(this.value)">
+                            <option value="">-- Select Session to Visualize --</option>
+                            {% for session in sessions %}
+                            <option value="{{ session.id }}">{{ session.name }} (#{{ session.id }})</option>
+                            {% endfor %}
+                        </select>
+                        <button class="btn-secondary mono" onclick="resetTopologyZoom()" title="Reset Canvas View"><i class="fa-solid fa-compress"></i></button>
+                        <button class="btn-secondary mono" onclick="exportTopologySnapshot()" title="Export PNG Snapshot"><i class="fa-solid fa-camera"></i> Snapshot</button>
+                    </div>
+                </div>
+
+                <div id="topology-canvas-container">
+                    <div class="topology-hud-toolbar">
+                        <span class="mono text-xs" style="color: var(--accent-cyan);" id="topology-node-count">0 Nodes</span>
+                        <span class="text-dim">|</span>
+                        <span class="mono text-xs" style="color: var(--text-muted);" id="topology-edge-count">0 Edges</span>
+                    </div>
+
+                    <div class="topology-legend mono">
+                        <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: #00f2fe; display: inline-block;"></span> Seed Target</span>
+                        <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: #10b981; display: inline-block;"></span> Crawled Node</span>
+                        <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: #f59e0b; display: inline-block;"></span> Crypto Wallet</span>
+                        <span style="display: flex; align-items: center; gap: 6px;"><span style="width: 10px; height: 10px; border-radius: 50%; background: #a855f7; display: inline-block;"></span> Email Contact</span>
+                    </div>
+
+                    <!-- Node Quick Inspector Card -->
+                    <div id="topology-node-inspector" class="topology-node-inspector mono">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span class="badge badge-cyan" id="inspector-node-type">Node</span>
+                            <button class="btn-mini-action" onclick="document.getElementById('topology-node-inspector').style.display='none'" style="padding: 2px 6px;"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                        <h4 id="inspector-node-label" style="font-size: 0.85rem; color: #fff; word-break: break-all; margin-bottom: 6px;">-</h4>
+                        <p id="inspector-node-full" class="text-dim text-xs" style="word-break: break-all; margin-bottom: 12px;">-</p>
+                        <div style="display: flex; gap: 6px;">
+                            <button class="btn-mini-action" id="inspector-btn-copy" style="flex-grow: 1;"><i class="fa-solid fa-copy"></i> Copy</button>
+                            <button class="btn-mini-action" id="inspector-btn-target" style="flex-grow: 1;"><i class="fa-solid fa-crosshairs"></i> Target</button>
+                        </div>
+                    </div>
+
+                    <canvas id="topology-canvas"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================================================================= -->
         <!-- TAB 2: DARK WEB META-SEARCH -->
         <!-- ================================================================= -->
         <div id="tab-metasearch" class="tab-content">
@@ -868,8 +1157,12 @@
                 </form>
 
                 <div id="metasearch-results-container" style="display: none;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; flex-wrap: wrap; gap: 10px;">
                         <h3 style="font-size: 1rem; font-weight: 700; color: var(--accent-cyan);" id="metasearch-results-count">Discovered Services</h3>
+                        <div style="display: flex; gap: 8px;">
+                            <input type="text" id="metasearch-filter-input" class="filter-input mono" placeholder="Filter discovered results..." oninput="filterMetaSearchResults()" style="min-width: 180px; padding: 4px 10px; font-size: 0.75rem;">
+                            <button class="btn-secondary mono" onclick="copyAllMetaSearchUrls()" style="font-size: 0.75rem; padding: 4px 12px;"><i class="fa-solid fa-copy"></i> Copy All URLs</button>
+                        </div>
                     </div>
 
                     <div class="table-responsive">
@@ -1024,19 +1317,31 @@
 
                     <!-- Discovered Crypto Wallets Section -->
                     <div style="margin-bottom: 24px;">
-                        <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 12px;"><i class="fa-brands fa-bitcoin"></i> Cryptocurrency Artifacts</h4>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--accent-cyan);"><i class="fa-brands fa-bitcoin"></i> Cryptocurrency Artifacts</h4>
+                            <button class="btn-mini-action" onclick="copyAllVaultCrypto()" style="font-size: 0.75rem;"><i class="fa-solid fa-copy"></i> Copy All Wallets</button>
+                        </div>
                         <div id="vault-crypto-grid" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
                     </div>
 
                     <!-- Discovered Emails Section -->
                     <div style="margin-bottom: 24px;">
-                        <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--accent-blue); margin-bottom: 12px;"><i class="fa-solid fa-envelope"></i> Discovered Email Contacts</h4>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--accent-blue);"><i class="fa-solid fa-envelope"></i> Discovered Email Contacts</h4>
+                            <button class="btn-mini-action" onclick="copyAllVaultEmails()" style="font-size: 0.75rem;"><i class="fa-solid fa-copy"></i> Copy All Emails</button>
+                        </div>
                         <div id="vault-emails-grid" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
                     </div>
 
                     <!-- Discovered Pages Table -->
                     <div style="margin-bottom: 24px;">
-                        <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 12px;"><i class="fa-solid fa-network-wired"></i> Crawled Nodes & Pages</h4>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                            <h4 style="font-size: 0.95rem; font-weight: 700; color: #fff;"><i class="fa-solid fa-network-wired"></i> Crawled Nodes & Pages</h4>
+                            <div style="display: flex; gap: 8px;">
+                                <input type="text" id="vault-pages-filter-input" class="filter-input mono" placeholder="Filter pages by URL or title..." oninput="filterVaultPagesTable()" style="min-width: 180px; padding: 4px 10px; font-size: 0.75rem;">
+                                <button class="btn-mini-action" onclick="copyAllVaultPageUrls()" style="font-size: 0.75rem;"><i class="fa-solid fa-copy"></i> Copy All URLs</button>
+                            </div>
+                        </div>
                         <div class="table-responsive">
                             <table class="cyber-table">
                                 <thead>
@@ -1179,6 +1484,59 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Modal Dialog -->
+    <div id="modal-shortcuts" class="modal-overlay" onclick="if(event.target===this)closeShortcutsModal()">
+        <div class="modal-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 12px;">
+                <h3 style="font-size: 1.1rem; color: var(--accent-cyan); display: flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid fa-keyboard"></i> Tactical Keyboard Shortcuts
+                </h3>
+                <button class="btn-mini-action" onclick="closeShortcutsModal()" style="padding: 4px 8px;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 12px; font-size: 0.85rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span class="text-main">Switch to Mission Control</span>
+                    <span class="shortcut-badge">Alt + 1</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span class="text-main">Switch to Topology Graph</span>
+                    <span class="shortcut-badge">Alt + 2</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span class="text-main">Switch to Dark Web Meta-Search</span>
+                    <span class="shortcut-badge">Alt + 3</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span class="text-main">Switch to AI Threat Intelligence</span>
+                    <span class="shortcut-badge">Alt + 4</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span class="text-main">Switch to Forensic Vault</span>
+                    <span class="shortcut-badge">Alt + 5</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span class="text-main">Switch to FTS5 Search</span>
+                    <span class="shortcut-badge">Alt + 6</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span class="text-main">Toggle 128MB Low-Spec GPU Mode</span>
+                    <span class="shortcut-badge">Alt + G</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span class="text-main">Focus Global / Table Search</span>
+                    <span class="shortcut-badge">Ctrl + K</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span class="text-main">Close Open Modal / Dialog</span>
+                    <span class="shortcut-badge">Esc</span>
+                </div>
+            </div>
+            <div style="margin-top: 20px; text-align: right;">
+                <button class="btn-primary" onclick="closeShortcutsModal()" style="width: auto; padding: 6px 20px;">Got It</button>
             </div>
         </div>
     </div>
@@ -1391,28 +1749,187 @@
             });
         }
 
+        // -------------------------------------------------------------
+        // Low-Spec 128MB GPU Engine & Audio FX Core
+        // -------------------------------------------------------------
+        let isLowSpecMode = false;
+        async function toggleLowSpecMode(manual = true) {
+            isLowSpecMode = !isLowSpecMode;
+            const btn = document.getElementById('btn-toggle-lowspec');
+            const label = document.getElementById('lowspec-text');
+            if (isLowSpecMode) {
+                document.body.classList.add('low-spec-mode');
+                if (label) label.innerText = '128MB GPU: ON';
+                if (btn) {
+                    btn.style.color = 'var(--accent-emerald)';
+                    btn.style.borderColor = 'rgba(16, 185, 129, 0.5)';
+                }
+                if (manual) {
+                    showToast('128MB Low-Spec GPU Mode Enabled (Zero-Lag Core)', '<i class="fa-solid fa-microchip"></i>');
+                    playCyberSound('click');
+                }
+            } else {
+                document.body.classList.remove('low-spec-mode');
+                if (label) label.innerText = '128MB GPU: OFF';
+                if (btn) {
+                    btn.style.color = 'var(--accent-cyan)';
+                    btn.style.borderColor = 'rgba(0, 242, 254, 0.3)';
+                }
+                if (manual) {
+                    showToast('Full Cyber Visual Effects Restored', '<i class="fa-solid fa-wand-magic-sparkles"></i>');
+                    playCyberSound('click');
+                }
+            }
+            await idbSet('settings', 'low_spec_mode', isLowSpecMode ? 'true' : 'false');
+        }
+
+        let isAudioEnabled = true;
+        let audioCtx = null;
+        async function toggleAudioFX() {
+            isAudioEnabled = !isAudioEnabled;
+            const icon = document.getElementById('audio-icon');
+            if (isAudioEnabled) {
+                if (icon) icon.className = 'fa-solid fa-volume-high';
+                showToast('Tactical Audio FX: Active', '<i class="fa-solid fa-volume-high"></i>');
+                playCyberSound('success');
+            } else {
+                if (icon) icon.className = 'fa-solid fa-volume-xmark';
+                showToast('Tactical Audio FX: Muted', '<i class="fa-solid fa-volume-xmark"></i>');
+            }
+            await idbSet('settings', 'audio_fx', isAudioEnabled ? 'true' : 'false');
+        }
+
+        function playCyberSound(type = 'click') {
+            if (!isAudioEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                const now = audioCtx.currentTime;
+
+                if (type === 'click') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(880, now);
+                    osc.frequency.exponentialRampToValueAtTime(440, now + 0.04);
+                    gain.gain.setValueAtTime(0.04, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+                    osc.start(now);
+                    osc.stop(now + 0.04);
+                } else if (type === 'success') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(587.33, now);
+                    osc.frequency.setValueAtTime(880, now + 0.06);
+                    gain.gain.setValueAtTime(0.05, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+                    osc.start(now);
+                    osc.stop(now + 0.14);
+                } else if (type === 'probe') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(1100, now);
+                    osc.frequency.exponentialRampToValueAtTime(300, now + 0.09);
+                    gain.gain.setValueAtTime(0.04, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+                    osc.start(now);
+                    osc.stop(now + 0.09);
+                }
+            } catch (e) {}
+        }
+
+        function openShortcutsModal() {
+            document.getElementById('modal-shortcuts').style.display = 'flex';
+            playCyberSound('click');
+        }
+
+        function closeShortcutsModal() {
+            document.getElementById('modal-shortcuts').style.display = 'none';
+        }
+
         function showToast(message, icon = '<i class="fa-solid fa-check"></i>') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = 'toast';
             toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
             container.appendChild(toast);
-            setTimeout(() => toast.remove(), 4500);
+            setTimeout(() => toast.remove(), 4000);
         }
 
         function logTerminal(msg) {
             const stream = document.getElementById('terminal-stream');
+            if (!stream) return;
             const line = document.createElement('div');
             line.className = 'terminal-line';
             const now = new Date().toTimeString().split(' ')[0];
-            line.innerHTML = `<span class="terminal-timestamp">[${now}]</span> ${msg}`;
+            line.innerHTML = `<span class="terminal-timestamp">[${now}]</span> ${escapeHtml(msg)}`;
             stream.appendChild(line);
+
+            // 128MB GPU optimization: Cap terminal lines to max 100 to prevent memory growth
+            while (stream.children.length > 100) {
+                stream.removeChild(stream.firstElementChild);
+            }
             stream.scrollTop = stream.scrollHeight;
         }
 
         function clearConsoleLog() {
             document.getElementById('terminal-stream').innerHTML = '';
             logTerminal('Console buffer cleared.');
+        }
+
+        // Quick Target Probe
+        async function runQuickProbe() {
+            const input = document.getElementById('probe-url-input');
+            const targetUrl = input.value.trim();
+            if (!targetUrl) {
+                showToast('Enter a target URL to probe', '⚠️');
+                return;
+            }
+            const btn = document.getElementById('btn-run-probe');
+            const resContainer = document.getElementById('probe-result-container');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            logTerminal(`[PROBE] Pinging target: ${targetUrl}...`);
+            playCyberSound('probe');
+
+            try {
+                const formData = new FormData();
+                formData.append('url', targetUrl);
+                const resp = await fetch('/api/probe', { method: 'POST', body: formData });
+                const data = await resp.json();
+
+                resContainer.style.display = 'block';
+                if (data.online) {
+                    resContainer.innerHTML = `
+                        <div class="probe-status-card" style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3);">
+                            <div>
+                                <span class="badge badge-emerald mono"><i class="fa-solid fa-circle-check"></i> ONLINE (${data.status_code})</span>
+                                <span class="mono text-xs" style="color: var(--accent-cyan); margin-left: 8px;">⚡ ${data.latency_ms}ms</span>
+                                <p class="mono text-xs text-dim" style="margin-top: 4px;">Server: <strong>${escapeHtml(data.server)}</strong> | Title: <strong>${escapeHtml(data.title)}</strong></p>
+                            </div>
+                            <button type="button" class="btn-mini-action" onclick="document.getElementById('recon-url').value='${escapeHtml(data.url)}'; showToast('Loaded into Recon Launcher!', '<i class=\\'fa-solid fa-crosshairs\\'></i>')"><i class="fa-solid fa-crosshairs"></i> Load into Swarm</button>
+                        </div>
+                    `;
+                    logTerminal(`[PROBE SUCCESS] ${targetUrl} is ONLINE (Latency: ${data.latency_ms}ms, Status: ${data.status_code})`);
+                    playCyberSound('success');
+                } else {
+                    resContainer.innerHTML = `
+                        <div class="probe-status-card" style="background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.3);">
+                            <div>
+                                <span class="badge badge-rose mono"><i class="fa-solid fa-triangle-exclamation"></i> UNREACHABLE / OFFLINE</span>
+                                <p class="mono text-xs text-dim" style="margin-top: 4px;">Error: ${escapeHtml(data.error)}</p>
+                            </div>
+                        </div>
+                    `;
+                    logTerminal(`[PROBE NOTICE] ${targetUrl} is unreachable: ${data.error}`);
+                }
+            } catch (err) {
+                resContainer.style.display = 'block';
+                resContainer.innerHTML = `<div class="probe-status-card" style="background: rgba(244,63,94,0.1); border:1px solid rgba(244,63,94,0.3);"><span class="badge badge-rose mono">Network Probe Failed</span></div>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-satellite-dish"></i> Probe';
+            }
         }
 
         // Bug 7 fix: XSS-safe HTML escaping utility
@@ -1429,6 +1946,7 @@
                 const data = await resp.json();
                 showToast(data.message || `Session #${sessionId} deleted.`, '<i class="fa-solid fa-trash"></i>');
                 logTerminal(`[DELETE] ${data.message}`);
+                playCyberSound('click');
                 await refreshSystemData(true);
                 await refreshSessionsTable();
             } catch (err) {
@@ -1459,6 +1977,7 @@
                 const data = await resp.json();
                 showToast(data.message || 'All sessions purged.', '<i class="fa-solid fa-fire"></i>');
                 logTerminal(`[PURGE] ${data.message}`);
+                playCyberSound('click');
                 await refreshSystemData(true);
                 await refreshSessionsTable();
             } catch (err) {
@@ -1466,13 +1985,13 @@
             }
         }
 
-
         function selectPreset(depth, workers, delay, el) {
             document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('selected'));
             el.classList.add('selected');
             document.getElementById('recon-depth').value = depth;
             document.getElementById('recon-workers').value = workers;
             document.getElementById('recon-delay').value = delay;
+            playCyberSound('click');
         }
 
         // -------------------------------------------------------------
@@ -1618,113 +2137,375 @@
             }, 3000);
         }
 
+        // -------------------------------------------------------------
+        // Cached Table Data & Instant Multi-Column Filtering
+        // -------------------------------------------------------------
+        let cachedSessionsList = [];
+        let cachedMetaSearchResults = [];
+        let cachedVaultPages = [];
+
         async function refreshSessionsTable() {
             try {
                 const resp = await fetch('/api/sessions');
                 const data = await resp.json();
-                const tbody = document.getElementById('sessions-table-body');
-                if (!tbody) return;
-
+                cachedSessionsList = data.sessions || [];
                 const badge = document.getElementById('session-count-badge');
-                if (badge) badge.innerText = `${data.sessions.length} Sessions`;
+                if (badge) badge.innerText = `${cachedSessionsList.length} Sessions`;
 
-                updateSessionDropdowns(data.sessions);
-
-                if (data.sessions && data.sessions.length > 0) {
-                    tbody.innerHTML = '';
-                    data.sessions.forEach(s => {
-                        const tr = document.createElement('tr');
-                        let statusBadge = '';
-                        if (s.status === 'completed') {
-                            statusBadge = `<span class="badge badge-emerald mono"><i class="fa-solid fa-circle-check"></i> completed (${s.page_count}p)</span>`;
-                        } else if (s.status === 'stopped') {
-                            statusBadge = `<span class="badge badge-amber mono"><i class="fa-solid fa-hand"></i> stopped (${s.page_count}p)</span>`;
-                        } else if (s.status === 'failed') {
-                            statusBadge = `<span class="badge badge-rose mono"><i class="fa-solid fa-triangle-exclamation"></i> failed</span>`;
-                        } else {
-                            statusBadge = `<span class="badge badge-cyan mono"><i class="fa-solid fa-spinner fa-spin"></i> active (${s.page_count}p)</span>`;
-                        }
-
-                        const stopBtn = (s.status === 'active')
-                            ? `<button class="btn-secondary mono" style="color:var(--accent-rose); border-color:rgba(244,63,94,0.3); margin-left:6px;" onclick="stopActiveCrawl(${s.id})"><i class="fa-solid fa-stop"></i> Stop</button>`
-                            : '';
-
-                        // Bug 7 fix: escape seed_url to prevent XSS
-                        const safeSeedUrl = escapeHtml(s.seed_url);
-                        const rawSeedUrl = s.seed_url || '';
-                        const seedUrlHtml = s.seed_url
-                            ? `<a href="${safeSeedUrl}" target="_blank" rel="noreferrer" style="color: var(--accent-cyan); text-decoration: none; display: inline-flex; align-items: center; gap: 6px;" title="Open target">
-                                <span>${safeSeedUrl}</span>
-                                <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.75rem;"></i>
-                               </a>
-                               <button class="btn-mini-action" onclick="navigator.clipboard.writeText(${JSON.stringify(rawSeedUrl)}); showToast('Target URL copied!', '<i class=\\'fa-solid fa-copy\\'></i>')" title="Copy URL" style="margin-left: 6px; padding: 2px 6px;">
-                                <i class="fa-solid fa-copy" style="font-size: 0.7rem;"></i>
-                               </button>`
-                            : `<span class="text-dim">Direct Crawl</span>`;
-
-                        // Feature 4: Threat score badge
-                        const threat = calculateThreatScore(s);
-                        const threatBadge = `<span class="badge mono" style="color:${threat.color}; background:${threat.bg}; border-color:${threat.color}30;"><i class="fa-solid fa-shield-halved"></i> ${threat.level}</span>`;
-
-                        tr.innerHTML = `
-                            <td class="mono" style="color: var(--accent-cyan); font-weight: 700;">#${s.id}</td>
-                            <td style="font-weight: 600; color: #fff;">${escapeHtml(s.name)}</td>
-                            <td class="mono" style="max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                ${seedUrlHtml}
-                            </td>
-                            <td>${statusBadge}</td>
-                            <td>${threatBadge}</td>
-                            <td class="mono text-dim">${s.started_at ? s.started_at.substring(0, 16) : "-"}</td>
-                            <td>
-                                <button class="btn-secondary mono" onclick="inspectSession(${s.id})">
-                                    <i class="fa-solid fa-magnifying-glass-chart"></i> Inspect
-                                </button>
-                                ${stopBtn}
-                                <button class="btn-secondary mono" style="color:var(--accent-rose); border-color:rgba(244,63,94,0.2); margin-left:4px;" onclick="deleteSession(${s.id})" title="Delete session">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-                }
+                updateSessionDropdowns(cachedSessionsList);
+                filterSessionsTable();
             } catch (err) {
                 console.error('Failed to refresh sessions table:', err);
             }
         }
 
+        function filterSessionsTable() {
+            const query = (document.getElementById('session-search-filter')?.value || '').toLowerCase().trim();
+            const statusFilter = document.getElementById('session-status-filter')?.value || 'all';
+            const threatFilter = document.getElementById('session-threat-filter')?.value || 'all';
+
+            const filtered = cachedSessionsList.filter(s => {
+                const matchesQuery = !query || s.name.toLowerCase().includes(query) || (s.seed_url || '').toLowerCase().includes(query) || String(s.id).includes(query);
+                const matchesStatus = statusFilter === 'all' || s.status === statusFilter;
+                const threat = calculateThreatScore(s);
+                const matchesThreat = threatFilter === 'all' || threat.level === threatFilter;
+                return matchesQuery && matchesStatus && matchesThreat;
+            });
+
+            renderSessionsTableRows(filtered);
+        }
+
+        function renderSessionsTableRows(sessions) {
+            const tbody = document.getElementById('sessions-table-body');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            if (sessions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-dim); padding: 24px;">No matching sessions found.</td></tr>';
+                return;
+            }
+
+            sessions.forEach(s => {
+                const tr = document.createElement('tr');
+                let statusBadge = '';
+                if (s.status === 'completed') {
+                    statusBadge = `<span class="badge badge-emerald mono"><i class="fa-solid fa-circle-check"></i> completed (${s.page_count}p)</span>`;
+                } else if (s.status === 'stopped') {
+                    statusBadge = `<span class="badge badge-amber mono"><i class="fa-solid fa-hand"></i> stopped (${s.page_count}p)</span>`;
+                } else if (s.status === 'failed') {
+                    statusBadge = `<span class="badge badge-rose mono"><i class="fa-solid fa-triangle-exclamation"></i> failed</span>`;
+                } else {
+                    statusBadge = `<span class="badge badge-cyan mono"><i class="fa-solid fa-spinner fa-spin"></i> active (${s.page_count}p)</span>`;
+                }
+
+                const stopBtn = (s.status === 'active')
+                    ? `<button class="btn-secondary mono" style="color:var(--accent-rose); border-color:rgba(244,63,94,0.3); margin-left:6px;" onclick="stopActiveCrawl(${s.id})"><i class="fa-solid fa-stop"></i> Stop</button>`
+                    : '';
+
+                const safeSeedUrl = escapeHtml(s.seed_url);
+                const rawSeedUrl = s.seed_url || '';
+                const seedUrlHtml = s.seed_url
+                    ? `<a href="${safeSeedUrl}" target="_blank" rel="noreferrer" style="color: var(--accent-cyan); text-decoration: none; display: inline-flex; align-items: center; gap: 6px;" title="Open target">
+                        <span>${safeSeedUrl}</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.75rem;"></i>
+                       </a>
+                       <button class="btn-mini-action" onclick="navigator.clipboard.writeText(${JSON.stringify(rawSeedUrl)}); showToast('Target URL copied!', '<i class=\\'fa-solid fa-copy\\'></i>')" title="Copy URL" style="margin-left: 6px; padding: 2px 6px;">
+                        <i class="fa-solid fa-copy" style="font-size: 0.7rem;"></i>
+                       </button>`
+                    : `<span class="text-dim">Direct Crawl</span>`;
+
+                const threat = calculateThreatScore(s);
+                const threatBadge = `<span class="badge mono" style="color:${threat.color}; background:${threat.bg}; border-color:${threat.color}30;"><i class="fa-solid fa-shield-halved"></i> ${threat.level}</span>`;
+
+                tr.innerHTML = `
+                    <td class="mono" style="color: var(--accent-cyan); font-weight: 700;">#${s.id}</td>
+                    <td style="font-weight: 600; color: #fff;">${escapeHtml(s.name)}</td>
+                    <td class="mono" style="max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        ${seedUrlHtml}
+                    </td>
+                    <td>${statusBadge}</td>
+                    <td>${threatBadge}</td>
+                    <td class="mono text-dim">${s.started_at ? s.started_at.substring(0, 16) : "-"}</td>
+                    <td>
+                        <button class="btn-secondary mono" onclick="inspectSession(${s.id})">
+                            <i class="fa-solid fa-magnifying-glass-chart"></i> Inspect
+                        </button>
+                        ${stopBtn}
+                        <button class="btn-secondary mono" style="color:var(--accent-rose); border-color:rgba(244,63,94,0.2); margin-left:4px;" onclick="deleteSession(${s.id})" title="Delete session">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
         function updateSessionDropdowns(sessions) {
             const aiSelect = document.getElementById('ai-session-select');
             const vaultSelect = document.getElementById('vault-session-selector');
+            const topoSelect = document.getElementById('topology-session-selector');
 
-            if (aiSelect) {
-                const curr = aiSelect.value;
-                aiSelect.innerHTML = '<option value="">-- Select a Session or Paste Custom Below --</option>';
+            const populate = (selectEl, defaultText) => {
+                if (!selectEl) return;
+                const curr = selectEl.value;
+                selectEl.innerHTML = `<option value="">${defaultText}</option>`;
                 sessions.forEach(s => {
                     const opt = document.createElement('option');
                     opt.value = s.id;
-                    opt.innerText = `${s.name} (ID: ${s.id})`;
-                    aiSelect.appendChild(opt);
+                    opt.innerText = `${s.name} (#${s.id})`;
+                    selectEl.appendChild(opt);
                 });
-                if (curr) aiSelect.value = curr;
-            }
+                if (curr) selectEl.value = curr;
+            };
 
-            if (vaultSelect) {
-                const curr = vaultSelect.value;
-                vaultSelect.innerHTML = '<option value="">-- Select Investigation Session --</option>';
-                sessions.forEach(s => {
-                    const opt = document.createElement('option');
-                    opt.value = s.id;
-                    opt.innerText = `${s.name} (ID: ${s.id})`;
-                    vaultSelect.appendChild(opt);
-                });
-                if (curr) vaultSelect.value = curr;
+            populate(aiSelect, '-- Select a Session or Paste Custom Below --');
+            populate(vaultSelect, '-- Select Investigation Session --');
+            populate(topoSelect, '-- Select Session to Visualize --');
+        }
+
+        // -------------------------------------------------------------
+        // Canvas 2D Network Topology Graph Engine (60 FPS, Low Memory)
+        // -------------------------------------------------------------
+        let topologyNodes = [];
+        let topologyLinks = [];
+        let topologyAnimId = null;
+        let topologyCanvas = null;
+        let topologyCtx = null;
+        let topologyTransform = { x: 0, y: 0, scale: 1 };
+        let topologyDraggingNode = null;
+        let topologyIsPanning = false;
+        let topologyPanStart = { x: 0, y: 0 };
+        let topologyHoveredNode = null;
+        let topologySelectedNode = null;
+
+        async function loadTopologyForSession(sessionId) {
+            if (!sessionId) return;
+            const nodeCountEl = document.getElementById('topology-node-count');
+            const edgeCountEl = document.getElementById('topology-edge-count');
+            if (nodeCountEl) nodeCountEl.innerText = 'Loading nodes...';
+
+            try {
+                const resp = await fetch(`/api/sessions/${sessionId}/graph`);
+                const data = await resp.json();
+                initTopologyGraph(data.nodes || [], data.links || []);
+                if (nodeCountEl) nodeCountEl.innerText = `${data.nodes ? data.nodes.length : 0} Nodes`;
+                if (edgeCountEl) edgeCountEl.innerText = `${data.links ? data.links.length : 0} Edges`;
+                playCyberSound('click');
+            } catch (err) {
+                showToast('Failed to load topology graph', '⚠️');
             }
+        }
+
+        function initTopologyGraph(nodes, links) {
+            topologyCanvas = document.getElementById('topology-canvas');
+            if (!topologyCanvas) return;
+            topologyCtx = topologyCanvas.getContext('2d');
+
+            const container = document.getElementById('topology-canvas-container');
+            const rect = container ? container.getBoundingClientRect() : { width: 800, height: 560 };
+            topologyCanvas.width = rect.width || 800;
+            topologyCanvas.height = rect.height || 560;
+
+            const cx = topologyCanvas.width / 2;
+            const cy = topologyCanvas.height / 2;
+
+            nodes.forEach((n, i) => {
+                if (n.type === 'seed') {
+                    n.x = cx;
+                    n.y = cy;
+                    n.vx = 0;
+                    n.vy = 0;
+                } else {
+                    const angle = (i / Math.max(nodes.length - 1, 1)) * Math.PI * 2;
+                    const radius = 120 + (i % 3) * 60 + Math.random() * 20;
+                    n.x = cx + Math.cos(angle) * radius;
+                    n.y = cy + Math.sin(angle) * radius;
+                    n.vx = 0;
+                    n.vy = 0;
+                }
+            });
+
+            topologyNodes = nodes;
+            topologyLinks = links;
+            topologyTransform = { x: 0, y: 0, scale: 1 };
+
+            setupTopologyInteractivity();
+            startTopologyLoop();
+        }
+
+        function setupTopologyInteractivity() {
+            if (!topologyCanvas) return;
+
+            topologyCanvas.onmousedown = (e) => {
+                const mouse = getCanvasMousePos(e);
+                const clicked = findNodeAt(mouse.x, mouse.y);
+                if (clicked) {
+                    topologyDraggingNode = clicked;
+                    topologySelectedNode = clicked;
+                    showTopologyNodeInspector(clicked);
+                    playCyberSound('click');
+                } else {
+                    topologyIsPanning = true;
+                    topologyPanStart = { x: e.clientX - topologyTransform.x, y: e.clientY - topologyTransform.y };
+                }
+            };
+
+            window.onmousemove = (e) => {
+                if (!topologyCanvas) return;
+                const rect = topologyCanvas.getBoundingClientRect();
+                if (topologyDraggingNode) {
+                    const mouse = getCanvasMousePos(e);
+                    topologyDraggingNode.x = mouse.x;
+                    topologyDraggingNode.y = mouse.y;
+                } else if (topologyIsPanning) {
+                    topologyTransform.x = e.clientX - topologyPanStart.x;
+                    topologyTransform.y = e.clientY - topologyPanStart.y;
+                } else {
+                    if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                        const mouse = getCanvasMousePos(e);
+                        topologyHoveredNode = findNodeAt(mouse.x, mouse.y);
+                        topologyCanvas.style.cursor = topologyHoveredNode ? 'pointer' : 'grab';
+                    }
+                }
+            };
+
+            window.onmouseup = () => {
+                topologyDraggingNode = null;
+                topologyIsPanning = false;
+            };
+
+            topologyCanvas.onwheel = (e) => {
+                e.preventDefault();
+                const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+                topologyTransform.scale = Math.max(0.4, Math.min(3, topologyTransform.scale * zoomFactor));
+            };
+        }
+
+        function getCanvasMousePos(e) {
+            const rect = topologyCanvas.getBoundingClientRect();
+            const clientX = e.clientX - rect.left;
+            const clientY = e.clientY - rect.top;
+            return {
+                x: (clientX - topologyTransform.x) / topologyTransform.scale,
+                y: (clientY - topologyTransform.y) / topologyTransform.scale
+            };
+        }
+
+        function findNodeAt(x, y) {
+            for (let i = topologyNodes.length - 1; i >= 0; i--) {
+                const n = topologyNodes[i];
+                const dist = Math.hypot(n.x - x, n.y - y);
+                if (dist <= (n.size || 10) + 4) return n;
+            }
+            return null;
+        }
+
+        function showTopologyNodeInspector(node) {
+            const card = document.getElementById('topology-node-inspector');
+            if (!card) return;
+            card.style.display = 'block';
+            document.getElementById('inspector-node-type').innerText = (node.type || 'NODE').toUpperCase();
+            document.getElementById('inspector-node-label').innerText = node.label || 'Node';
+            document.getElementById('inspector-node-full').innerText = node.full_label || node.label || '';
+
+            const copyBtn = document.getElementById('inspector-btn-copy');
+            copyBtn.onclick = () => {
+                navigator.clipboard.writeText(node.full_label || node.label || '');
+                showToast('Artifact copied to clipboard!', '<i class="fa-solid fa-copy"></i>');
+                playCyberSound('click');
+            };
+
+            const targetBtn = document.getElementById('inspector-btn-target');
+            if (node.url || node.type === 'seed' || node.type === 'page') {
+                targetBtn.style.display = 'inline-flex';
+                targetBtn.onclick = () => {
+                    document.getElementById('recon-url').value = node.url || node.full_label || '';
+                    switchTab('mission-control');
+                    showToast('Target loaded into Recon Launcher!', '<i class="fa-solid fa-crosshairs"></i>');
+                };
+            } else {
+                targetBtn.style.display = 'none';
+            }
+        }
+
+        function resetTopologyZoom() {
+            topologyTransform = { x: 0, y: 0, scale: 1 };
+            playCyberSound('click');
+        }
+
+        function exportTopologySnapshot() {
+            if (!topologyCanvas) return;
+            const link = document.createElement('a');
+            link.download = `topology_graph_${Date.now()}.png`;
+            link.href = topologyCanvas.toDataURL('image/png');
+            link.click();
+            showToast('Topology graph snapshot exported!', '<i class="fa-solid fa-camera"></i>');
+            playCyberSound('success');
+        }
+
+        function startTopologyLoop() {
+            if (topologyAnimId) cancelAnimationFrame(topologyAnimId);
+
+            function frame() {
+                const tab = document.getElementById('tab-topology');
+                if (tab && tab.classList.contains('active')) {
+                    renderTopologyFrame();
+                }
+                topologyAnimId = requestAnimationFrame(frame);
+            }
+            topologyAnimId = requestAnimationFrame(frame);
+        }
+
+        function renderTopologyFrame() {
+            if (!topologyCtx || !topologyCanvas) return;
+            const ctx = topologyCtx;
+            ctx.clearRect(0, 0, topologyCanvas.width, topologyCanvas.height);
+
+            ctx.save();
+            ctx.translate(topologyTransform.x, topologyTransform.y);
+            ctx.scale(topologyTransform.scale, topologyTransform.scale);
+
+            // Draw Links
+            topologyLinks.forEach(link => {
+                const src = topologyNodes.find(n => n.id === link.source);
+                const tgt = topologyNodes.find(n => n.id === link.target);
+                if (src && tgt) {
+                    ctx.beginPath();
+                    ctx.moveTo(src.x, src.y);
+                    ctx.lineTo(tgt.x, tgt.y);
+                    ctx.strokeStyle = isLowSpecMode ? '#334155' : (link.color || 'rgba(0, 242, 254, 0.3)');
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            });
+
+            // Draw Nodes
+            topologyNodes.forEach(node => {
+                const size = node.size || 10;
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, size, 0, Math.PI * 2);
+                ctx.fillStyle = node.color || '#00f2fe';
+                ctx.fill();
+
+                if (!isLowSpecMode) {
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = node === topologyHoveredNode || node === topologySelectedNode ? 2.5 : 1;
+                    ctx.stroke();
+                }
+
+                ctx.fillStyle = '#f1f5f9';
+                ctx.font = `${Math.max(9, Math.min(12, size))}px JetBrains Mono, monospace`;
+                ctx.textAlign = 'center';
+                ctx.fillText(node.label || '', node.x, node.y + size + 14);
+            });
+
+            ctx.restore();
         }
 
         // Rotate Tor Circuit
         async function rotateTorCircuit() {
             logTerminal('[OPSEC] Requesting fresh Tor identity circuit (NEWNYM)...');
+            playCyberSound('click');
             try {
                 const resp = await fetch('/api/tor/renew', { method: 'POST' });
                 const data = await resp.json();
@@ -1732,6 +2513,7 @@
                     showToast(`Tor Identity Renewed! Exit IP: ${data.tor_ip}`, '<i class="fa-solid fa-shield-halved"></i>');
                     document.getElementById('tor-ip-display').innerText = data.tor_ip;
                     logTerminal(`[OPSEC] Tor circuit rotated. Current exit IP: ${data.tor_ip}`);
+                    playCyberSound('success');
                 } else {
                     showToast('Could not renew Tor circuit (Control port offline)', '⚠️');
                     logTerminal('[OPSEC] Tor identity renewal unavailable.');
@@ -1750,49 +2532,23 @@
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Querying 11 Engines...';
 
             logTerminal(`[METASEARCH] Querying dark web indexes for: "${query}"...`);
+            playCyberSound('click');
 
             try {
                 const formData = new FormData();
                 formData.append('query', query);
                 const resp = await fetch('/api/metasearch', { method: 'POST', body: formData });
                 const data = await resp.json();
+                cachedMetaSearchResults = data.results || [];
 
                 const container = document.getElementById('metasearch-results-container');
-                const tbody = document.getElementById('metasearch-results-tbody');
                 container.style.display = 'block';
-                tbody.innerHTML = '';
+                document.getElementById('metasearch-results-count').innerText = `Discovered ${cachedMetaSearchResults.length} Unique Hidden Services`;
 
-                document.getElementById('metasearch-results-count').innerText = `Discovered ${data.count} Unique Hidden Services`;
-
-                if (data.results && data.results.length > 0) {
-                    data.results.forEach((r, idx) => {
-                        const row = document.createElement('tr');
-                        const enginesPills = r.found_by.map(e => `<span class="badge badge-purple mono">${e}</span>`).join(' ');
-                        row.innerHTML = `
-                            <td class="mono text-dim">${idx + 1}</td>
-                            <td class="mono text-main" style="word-break: break-all;">
-                                <a href="${r.url}" target="_blank" rel="noreferrer" style="color: var(--accent-cyan); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
-                                    <span>${r.url}</span>
-                                    <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.7rem;"></i>
-                                </a>
-                                <button class="btn-mini-action" onclick="navigator.clipboard.writeText('${r.url}'); showToast('URL copied!', '<i class=\\'fa-solid fa-copy\\'></i>')" title="Copy URL" style="margin-left: 4px; padding: 1px 4px;">
-                                    <i class="fa-solid fa-copy" style="font-size: 0.65rem;"></i>
-                                </button>
-                            </td>
-                            <td>${enginesPills}</td>
-                            <td>
-                                <button class="btn-mini-action" onclick="targetMetaSearchUrl('${r.url}')">
-                                    <i class="fa-solid fa-crosshairs"></i> Target
-                                </button>
-                            </td>
-                        `;
-                        tbody.appendChild(row);
-                    });
-                    logTerminal(`[METASEARCH] Finished! ${data.count} services discovered.`);
-                    showToast(`Discovered ${data.count} hidden services!`, '<i class="fa-solid fa-spider"></i>');
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-dim); padding: 24px;">No hidden services found for this query.</td></tr>';
-                }
+                filterMetaSearchResults();
+                logTerminal(`[METASEARCH] Finished! ${cachedMetaSearchResults.length} services discovered.`);
+                showToast(`Discovered ${cachedMetaSearchResults.length} hidden services!`, '<i class="fa-solid fa-spider"></i>');
+                playCyberSound('success');
             } catch (err) {
                 showToast('Meta-search failed', '<i class="fa-solid fa-xmark"></i>');
             } finally {
@@ -1801,11 +2557,60 @@
             }
         }
 
+        function filterMetaSearchResults() {
+            const query = (document.getElementById('metasearch-filter-input')?.value || '').toLowerCase().trim();
+            const filtered = cachedMetaSearchResults.filter(r => !query || r.url.toLowerCase().includes(query) || r.found_by.some(e => e.toLowerCase().includes(query)));
+            const tbody = document.getElementById('metasearch-results-tbody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            if (filtered.length > 0) {
+                filtered.forEach((r, idx) => {
+                    const row = document.createElement('tr');
+                    const enginesPills = r.found_by.map(e => `<span class="badge badge-purple mono">${e}</span>`).join(' ');
+                    const safeUrl = escapeHtml(r.url);
+                    row.innerHTML = `
+                        <td class="mono text-dim">${idx + 1}</td>
+                        <td class="mono text-main" style="word-break: break-all;">
+                            <a href="${safeUrl}" target="_blank" rel="noreferrer" style="color: var(--accent-cyan); text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                                <span>${safeUrl}</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.7rem;"></i>
+                            </a>
+                            <button class="btn-mini-action" onclick="navigator.clipboard.writeText(${JSON.stringify(r.url)}); showToast('URL copied!', '<i class=\\'fa-solid fa-copy\\'></i>')" title="Copy URL" style="margin-left: 4px; padding: 1px 4px;">
+                                <i class="fa-solid fa-copy" style="font-size: 0.65rem;"></i>
+                            </button>
+                        </td>
+                        <td>${enginesPills}</td>
+                        <td>
+                            <button class="btn-mini-action" onclick="targetMetaSearchUrl('${safeUrl}')">
+                                <i class="fa-solid fa-crosshairs"></i> Target
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--text-dim); padding: 24px;">No matching hidden services found.</td></tr>';
+            }
+        }
+
+        function copyAllMetaSearchUrls() {
+            if (!cachedMetaSearchResults.length) {
+                showToast('No search results to copy', '⚠️');
+                return;
+            }
+            const urls = cachedMetaSearchResults.map(r => r.url).join('\n');
+            navigator.clipboard.writeText(urls);
+            showToast(`Copied ${cachedMetaSearchResults.length} onion URLs to clipboard!`, '<i class="fa-solid fa-copy"></i>');
+            playCyberSound('click');
+        }
+
         function targetMetaSearchUrl(url) {
             document.getElementById('recon-url').value = url;
             document.getElementById('recon-session-name').value = `OP_META_${Math.floor(Date.now() / 1000)}`;
             switchTab('mission-control');
             showToast(`Loaded ${url} into Recon Launcher!`, '<i class="fa-solid fa-crosshairs"></i>');
+            playCyberSound('click');
         }
 
         // -------------------------------------------------------------
@@ -1974,8 +2779,10 @@
         }
 
         // -------------------------------------------------------------
-        // Vault Session Inspector
+        // Vault Session Inspector & Instant Filtering
         // -------------------------------------------------------------
+        let currentVaultData = { pages: [], crypto: [], emails: [] };
+
         async function loadVaultSession(sessionId) {
             if (!sessionId) {
                 document.getElementById('vault-data-container').style.display = 'none';
@@ -2006,14 +2813,21 @@
                 const btc = data.crypto_hits.bitcoin || [];
                 const eth = data.crypto_hits.ethereum || [];
                 const xmr = data.crypto_hits.monero || [];
-                const totalCrypto = btc.length + eth.length + xmr.length;
+                const allCrypto = [...btc.map(a => ({t: 'BTC', a})), ...eth.map(a => ({t: 'ETH', a})), ...xmr.map(a => ({t: 'XMR', a}))];
+                const totalCrypto = allCrypto.length;
                 document.getElementById('vault-crypto-count').innerHTML = `<i class="fa-brands fa-bitcoin"></i> ${totalCrypto} Crypto`;
                 document.getElementById('vault-emails-count').innerHTML = `<i class="fa-solid fa-envelope"></i> ${data.emails.length} Emails`;
+
+                currentVaultData = {
+                    pages: data.pages || [],
+                    crypto: allCrypto,
+                    emails: data.emails || []
+                };
 
                 // Render Crypto
                 const cryptoGrid = document.getElementById('vault-crypto-grid');
                 cryptoGrid.innerHTML = '';
-                [...btc.map(a => ({t: 'BTC', a})), ...eth.map(a => ({t: 'ETH', a})), ...xmr.map(a => ({t: 'XMR', a}))].forEach(c => {
+                allCrypto.forEach(c => {
                     const el = document.createElement('div');
                     el.className = 'preset-card mono';
                     el.style.textAlign = 'left';
@@ -2047,10 +2861,21 @@
                 });
                 if (data.emails.length === 0) emailsGrid.innerHTML = '<p class="mono text-dim text-xs">No email contacts detected.</p>';
 
-                // Render Pages
-                const pagesTbody = document.getElementById('vault-pages-tbody');
-                pagesTbody.innerHTML = '';
-                data.pages.forEach(p => {
+                filterVaultPagesTable();
+            } catch (err) {
+                showToast('Failed to load session details', '<i class="fa-solid fa-xmark"></i>');
+            }
+        }
+
+        function filterVaultPagesTable() {
+            const query = (document.getElementById('vault-pages-filter-input')?.value || '').toLowerCase().trim();
+            const filtered = currentVaultData.pages.filter(p => !query || (p.url || '').toLowerCase().includes(query) || (p.title || '').toLowerCase().includes(query));
+            const pagesTbody = document.getElementById('vault-pages-tbody');
+            if (!pagesTbody) return;
+            pagesTbody.innerHTML = '';
+
+            if (filtered.length > 0) {
+                filtered.forEach(p => {
                     const row = document.createElement('tr');
                     const safeUrl = escapeHtml(p.url);
                     row.innerHTML = `
@@ -2070,10 +2895,40 @@
                     `;
                     pagesTbody.appendChild(row);
                 });
-
-            } catch (err) {
-                showToast('Failed to load session details', '<i class="fa-solid fa-xmark"></i>');
+            } else {
+                pagesTbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-dim); padding:20px;">No matching pages found in session.</td></tr>';
             }
+        }
+
+        function copyAllVaultCrypto() {
+            if (!currentVaultData.crypto.length) {
+                showToast('No crypto wallets to copy', '⚠️');
+                return;
+            }
+            const addrs = currentVaultData.crypto.map(c => `[${c.t}] ${c.a}`).join('\n');
+            navigator.clipboard.writeText(addrs);
+            showToast(`Copied ${currentVaultData.crypto.length} crypto addresses!`, '<i class="fa-solid fa-copy"></i>');
+            playCyberSound('click');
+        }
+
+        function copyAllVaultEmails() {
+            if (!currentVaultData.emails.length) {
+                showToast('No emails to copy', '⚠️');
+                return;
+            }
+            navigator.clipboard.writeText(currentVaultData.emails.join('\n'));
+            showToast(`Copied ${currentVaultData.emails.length} email contacts!`, '<i class="fa-solid fa-copy"></i>');
+            playCyberSound('click');
+        }
+
+        function copyAllVaultPageUrls() {
+            if (!currentVaultData.pages.length) {
+                showToast('No crawled pages to copy', '⚠️');
+                return;
+            }
+            navigator.clipboard.writeText(currentVaultData.pages.map(p => p.url).join('\n'));
+            showToast(`Copied ${currentVaultData.pages.length} crawled URLs!`, '<i class="fa-solid fa-copy"></i>');
+            playCyberSound('click');
         }
 
         function inspectSession(id) {
@@ -2097,6 +2952,7 @@
                 const data = await resp.json();
                 showToast(data.message || 'Mission notes saved!', '<i class="fa-solid fa-floppy-disk"></i>');
                 logTerminal(`[VAULT] Notes updated for Session #${sid}.`);
+                playCyberSound('success');
             } catch (err) {
                 showToast('Failed to save notes', '<i class="fa-solid fa-xmark"></i>');
             }
@@ -2111,6 +2967,7 @@
             }
             window.open(`/api/sessions/${sid}/export?fmt=${fmt}`, '_blank');
             showToast(`Downloading ${fmt.toUpperCase()} session export...`, '<i class="fa-solid fa-download"></i>');
+            playCyberSound('click');
         }
 
         // Feature 1: Delete session from Vault Inspector
@@ -2141,6 +2998,7 @@
                     showToast('Forensic Dossier Generated!', '<i class="fa-solid fa-file-shield"></i>');
                     const fileUrl = data.files[fmt];
                     if (fileUrl) window.open(fileUrl, '_blank');
+                    playCyberSound('success');
                 }
             } catch (err) {
                 showToast('Report generation failed', '<i class="fa-solid fa-xmark"></i>');
@@ -2152,6 +3010,9 @@
             e.preventDefault();
             const q = document.getElementById('fts-search-query').value.trim();
             if (!q) return;
+
+            logTerminal(`[FTS5] Executing search query: "${q}"...`);
+            playCyberSound('click');
 
             try {
                 const resp = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
@@ -2170,16 +3031,18 @@
                         card.style.padding = '16px';
                         card.style.borderRadius = 'var(--radius-md)';
                         card.style.border = '1px solid var(--border-subtle)';
+                        const safeUrl = escapeHtml(r.url);
                         card.innerHTML = `
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                                <h4 style="color:#fff; font-size:0.95rem; font-weight:700;">${r.title || 'Untitled Node'}</h4>
+                                <h4 style="color:#fff; font-size:0.95rem; font-weight:700;">${escapeHtml(r.title || 'Untitled Node')}</h4>
                                 <span class="badge badge-purple mono">Score: ${Number(r.relevance_score || 0).toFixed(2)}</span>
                             </div>
-                            <a href="${r.url}" target="_blank" class="mono" style="color:var(--accent-cyan); font-size:0.75rem; word-break:break-all;">${r.url}</a>
-                            ${r.content ? `<p class="mono text-dim" style="font-size:0.75rem; margin-top:8px; line-clamp:2;">${r.content.substring(0, 200)}...</p>` : ''}
+                            <a href="${safeUrl}" target="_blank" class="mono" style="color:var(--accent-cyan); font-size:0.75rem; word-break:break-all;">${safeUrl}</a>
+                            ${r.content ? `<p class="mono text-dim" style="font-size:0.75rem; margin-top:8px; line-clamp:2;">${escapeHtml(r.content.substring(0, 200))}...</p>` : ''}
                         `;
                         list.appendChild(card);
                     });
+                    playCyberSound('success');
                 } else {
                     list.innerHTML = '<p class="mono text-dim" style="padding:20px; text-align:center;">No matching pages found in FTS5 index.</p>';
                 }
@@ -2208,15 +3071,61 @@
                 }
                 if (!silent) {
                     showToast('Telemetry refreshed', '<i class="fa-solid fa-bolt"></i>');
+                    playCyberSound('click');
                 }
             } catch (err) {
                 console.error(err);
             }
         }
 
-        // Initialize on page load: IndexedDB, Live Sessions, and auto-resume polling if active
+        // Global Tactical Keyboard Shortcuts Matrix
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeShortcutsModal();
+                const insp = document.getElementById('topology-node-inspector');
+                if (insp) insp.style.display = 'none';
+                return;
+            }
+
+            if (e.ctrlKey && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                const activeTab = document.querySelector('.tab-content.active')?.id;
+                if (activeTab === 'tab-mission-control') document.getElementById('session-search-filter')?.focus();
+                else if (activeTab === 'tab-metasearch') document.getElementById('metasearch-query')?.focus();
+                else if (activeTab === 'tab-vault') document.getElementById('vault-pages-filter-input')?.focus();
+                else if (activeTab === 'tab-search') document.getElementById('fts-search-query')?.focus();
+                else switchTab('search');
+                return;
+            }
+
+            if (e.altKey) {
+                if (e.key === '1') { e.preventDefault(); switchTab('mission-control'); playCyberSound('click'); }
+                else if (e.key === '2') { e.preventDefault(); switchTab('topology'); playCyberSound('click'); }
+                else if (e.key === '3') { e.preventDefault(); switchTab('metasearch'); playCyberSound('click'); }
+                else if (e.key === '4') { e.preventDefault(); switchTab('ai-lab'); playCyberSound('click'); }
+                else if (e.key === '5') { e.preventDefault(); switchTab('vault'); playCyberSound('click'); }
+                else if (e.key === '6') { e.preventDefault(); switchTab('search'); playCyberSound('click'); }
+                else if (e.key.toLowerCase() === 'g') { e.preventDefault(); toggleLowSpecMode(true); }
+            }
+        });
+
+        // Initialize on page load: IndexedDB, Low-Spec, Live Sessions, and auto-resume polling
         document.addEventListener('DOMContentLoaded', async () => {
             await initIndexedDB();
+
+            // Restore Low-Spec Mode & Audio preference from IndexedDB
+            const savedLowSpec = await idbGet('settings', 'low_spec_mode');
+            if (savedLowSpec === 'true') {
+                toggleLowSpecMode(false);
+            }
+
+            const savedAudio = await idbGet('settings', 'audio_fx');
+            if (savedAudio === 'false') {
+                isAudioEnabled = false;
+                const icon = document.getElementById('audio-icon');
+                if (icon) icon.className = 'fa-solid fa-volume-xmark';
+            }
+
             await refreshSystemData(true);
             await refreshSessionsTable();
 
