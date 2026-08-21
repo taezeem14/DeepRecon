@@ -229,6 +229,7 @@ class ReconWizard:
 
         crawler = AsyncCrawler(
             db=self.db,
+            session_id=session_id,
             depth=depth,
             workers=workers,
             delay=delay,
@@ -307,7 +308,7 @@ class ReconWizard:
             session_name = generate_mission_codename()
             session_id = self.db.create_session(session_name, seed_url=f"metasearch:{query}")
 
-            crawler = AsyncCrawler(db=self.db, depth=1, workers=5)
+            crawler = AsyncCrawler(db=self.db, session_id=session_id, depth=1, workers=5)
             console.print(f"\n[bold green]Crawl initiated for {len(selected_urls)} dark web targets...[/bold green]")
             with console.status("[bold green]Crawling targets...[/bold green]", spinner="dots"):
                 asyncio.run(crawler.crawl(selected_urls))
@@ -329,7 +330,7 @@ class ReconWizard:
         session_name = Prompt.ask("Session Codename", default=generate_mission_codename())
         session_id = self.db.create_session(session_name, seed_url="batch:multiple")
 
-        crawler = AsyncCrawler(db=self.db, depth=1, workers=min(len(urls), 10))
+        crawler = AsyncCrawler(db=self.db, session_id=session_id, depth=1, workers=min(len(urls), 10))
         with console.status("[bold green]Executing batch crawl...[/bold green]", spinner="dots"):
             asyncio.run(crawler.crawl(urls))
 

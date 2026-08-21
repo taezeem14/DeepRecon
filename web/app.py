@@ -162,6 +162,14 @@ async def api_get_sessions():
     enriched = []
     for s in sessions:
         pages = db.list_pages(s["id"])
+        crypto_count = 0
+        email_count = 0
+        for p in pages:
+            meta = p.get("meta") or {}
+            crypto = meta.get("crypto_addresses") or meta.get("crypto") or {}
+            crypto_count += len(crypto.get("bitcoin", [])) + len(crypto.get("ethereum", [])) + len(crypto.get("monero", []))
+            email_count += len(meta.get("emails", []))
+
         enriched.append(
             {
                 "id": s["id"],
@@ -169,7 +177,10 @@ async def api_get_sessions():
                 "seed_url": s.get("seed_url") or "",
                 "status": s.get("status") or "active",
                 "started_at": s.get("started_at") or "",
+                "notes": s.get("notes") or "",
                 "page_count": len(pages),
+                "crypto_count": crypto_count,
+                "email_count": email_count,
             }
         )
     return JSONResponse({"sessions": enriched})
@@ -221,11 +232,37 @@ async def api_get_session_details(session_id: int):
     )
 
 
+@app.delete("/api/sessions/purge")
+async def api_purge_all_sessions():
+    """Purge ALL sessions and associated data from the database."""
+    sessions = db.list_sessions()
+    count = len(sessions)
+    with db._connect() as conn:
+        conn.execute("DELETE FROM keywords_found")
+        conn.execute("DELETE FROM links")
+        conn.execute("DELETE FROM pages")
+        conn.execute("DELETE FROM reports")
+        conn.execute("DELETE FROM sessions")
+    return JSONResponse({"success": True, "purged_count": count, "message": f"Purged {count} sessions and all associated data."})
+
+
 @app.delete("/api/sessions/{session_id}")
 async def api_delete_session(session_id: int):
-    """Delete a reconnaissance session."""
-    db.delete_session(session_id)
-    return JSONResponse({"success": True, "message": f"Session #{session_id} deleted."})
+    """Delete a reconnaissance session and all associated data."""
+    session = db.get_session(session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    # Cascade: delete keywords and links tied to session pages, then pages, then session
+    with db._connect() as conn:
+        page_ids = [row["id"] for row in conn.execute("SELECT id FROM pages WHERE session_id = ?", (session_id,)).fetchall()]
+        if page_ids:
+            placeholders = ",".join("?" * len(page_ids))
+            conn.execute(f"DELETE FROM keywords_found WHERE page_id IN ({placeholders})", page_ids)
+            conn.execute(f"DELETE FROM links WHERE page_id IN ({placeholders})", page_ids)
+        conn.execute("DELETE FROM pages WHERE session_id = ?", (session_id,))
+        conn.execute("DELETE FROM reports WHERE session_id = ?", (session_id,))
+        conn.execute("DELETE FROM sessions WHERE id = ?", (session_id,))
+    return JSONResponse({"success": True, "message": f"Session #{session_id} and all associated data deleted."})
 
 
 @app.post("/api/scan")
@@ -453,7 +490,12 @@ async def api_generate_report(session_id: int = Form(...), title: str = Form(Non
 @app.get("/reports/{filename}")
 async def api_get_report_file(filename: str):
     """Serve or download generated report artifacts."""
-    file_path = reports_dir / filename
+    # Security: prevent path traversal
+    if "/" in filename or "\\" in filename or ".." in filename:
+        raise HTTPException(status_code=400, detail="Invalid filename")
+    file_path = (reports_dir / filename).resolve()
+    if not str(file_path).startswith(str(reports_dir.resolve())):
+        raise HTTPException(status_code=400, detail="Invalid filename")
     if not file_path.exists() or not file_path.is_file():
         raise HTTPException(status_code=404, detail="Report file not found")
 
@@ -470,7 +512,7 @@ async def api_get_report_file(filename: str):
 async def api_tor_renew():
     """Request a new Tor exit node circuit (NEWNYM)."""
     success = renew_ip()
-    time.sleep(0.5)
+    await asyncio.sleep(0.5)
     new_ip = tor_manager.get_current_ip() or "Rotated / Active"
     return JSONResponse(
         {
@@ -478,6 +520,58 @@ async def api_tor_renew():
             "tor_ip": new_ip,
             "message": "Tor identity renewed successfully" if success else "Tor control port unavailable",
         }
+    )
+
+@app.patch("/api/sessions/{session_id}/notes")
+async def api_update_session_notes(session_id: int, notes: str = Form("")):
+    """Update the notes field on a session for operator annotations."""
+    session = db.get_session(session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+    with db._connect() as conn:
+        conn.execute("UPDATE sessions SET notes = ? WHERE id = ?", (notes, session_id))
+    return JSONResponse({"success": True, "message": f"Notes updated for session #{session_id}."})
+
+
+@app.get("/api/sessions/{session_id}/export")
+async def api_export_session(session_id: int, fmt: str = Query("json")):
+    """Export all session data as a downloadable JSON or CSV payload."""
+    session = db.get_session(session_id)
+    if not session:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    pages = db.list_pages(session_id)
+    keyword_hits = db.list_keyword_hits(session_id)
+
+    export_data = {
+        "session": session,
+        "pages": pages,
+        "keyword_hits": keyword_hits,
+        "exported_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+    }
+
+    if fmt == "csv":
+        import csv
+        import io
+        output = io.StringIO()
+        if pages:
+            writer = csv.DictWriter(output, fieldnames=["url", "title", "status_code", "language", "content_type", "created_at"])
+            writer.writeheader()
+            for p in pages:
+                writer.writerow({k: p.get(k, "") for k in ["url", "title", "status_code", "language", "content_type", "created_at"]})
+        from fastapi.responses import Response
+        return Response(
+            content=output.getvalue(),
+            media_type="text/csv",
+            headers={"Content-Disposition": f"attachment; filename=session_{session_id}_export.csv"},
+        )
+
+    import json as json_mod
+    from fastapi.responses import Response
+    return Response(
+        content=json_mod.dumps(export_data, indent=2, default=str),
+        media_type="application/json",
+        headers={"Content-Disposition": f"attachment; filename=session_{session_id}_export.json"},
     )
 
 

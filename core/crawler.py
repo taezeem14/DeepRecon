@@ -194,6 +194,17 @@ class AsyncCrawler:
         )
 
         site_id = self.db.get_or_create_site(site_root, page.title)
+
+        # Build comprehensive meta combining HTML meta tags with extracted intelligence
+        enriched_meta = dict(page.meta)  # Start with HTML <meta> tags
+        enriched_meta["crypto_addresses"] = page.crypto_addresses
+        enriched_meta["emails"] = page.emails
+        enriched_meta["pgp_blocks"] = page.pgp_blocks
+        enriched_meta["phone_numbers"] = page.phone_numbers
+        enriched_meta["technologies"] = page.technologies
+        enriched_meta["flags"] = page.flags
+        enriched_meta["forms"] = page.forms
+
         page_id = self.db.upsert_page(
             Page(
                 session_id=self.session_id,
@@ -206,7 +217,7 @@ class AsyncCrawler:
                 status_code=page.status_code,
                 content_type=page.content_type,
                 headers=page.headers,
-                meta=page.meta,
+                meta=enriched_meta,
                 language=page.language,
             )
         )

@@ -789,6 +789,7 @@
                                 <th>Session Codename</th>
                                 <th>Target Seed</th>
                                 <th>Status</th>
+                                <th>Threat</th>
                                 <th>Started</th>
                                 <th>Actions</th>
                             </tr>
@@ -822,16 +823,20 @@
                                     <span class="badge badge-cyan mono"><i class="fa-solid fa-spinner fa-spin"></i> active</span>
                                     {% endif %}
                                 </td>
+                                <td><span class="badge badge-emerald mono"><i class="fa-solid fa-shield-halved"></i> LOW</span></td>
                                 <td class="mono text-dim">{{ session.started_at[:16] if session.started_at else "-" }}</td>
                                 <td>
                                     <button class="btn-secondary mono" onclick="inspectSession({{ session.id }})">
                                         <i class="fa-solid fa-magnifying-glass-chart"></i> Inspect
                                     </button>
+                                    <button class="btn-secondary mono" style="color:var(--accent-rose); border-color:rgba(244,63,94,0.2); margin-left:4px;" onclick="deleteSession({{ session.id }})" title="Delete session">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
                                 </td>
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="6" style="text-align: center; color: var(--text-dim); padding: 30px;">
+                                <td colspan="7" style="text-align: center; color: var(--text-dim); padding: 30px;">
                                     No sessions recorded yet. Launch your first recon mission above!
                                 </td>
                             </tr>
@@ -976,9 +981,11 @@
             <div class="cyber-panel">
                 <div class="panel-header">
                     <h2 class="panel-title"><i class="fa-solid fa-vault"></i> Forensic Intelligence Vault</h2>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn-secondary mono" onclick="generateReportForCurrentSession('html')"><i class="fa-solid fa-file-code"></i> Export HTML</button>
-                        <button class="btn-secondary mono" onclick="generateReportForCurrentSession('json')"><i class="fa-solid fa-file-lines"></i> Export JSON</button>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <button class="btn-secondary mono" onclick="generateReportForCurrentSession('html')"><i class="fa-solid fa-file-code"></i> HTML Report</button>
+                        <button class="btn-secondary mono" onclick="exportSessionRaw('json')"><i class="fa-solid fa-file-export"></i> Export JSON</button>
+                        <button class="btn-secondary mono" onclick="exportSessionRaw('csv')"><i class="fa-solid fa-file-csv"></i> Export CSV</button>
+                        <button class="btn-secondary mono" style="color:var(--accent-rose); border-color:rgba(244,63,94,0.2);" onclick="deleteCurrentVaultSession()" title="Delete this session"><i class="fa-solid fa-trash"></i></button>
                     </div>
                 </div>
 
@@ -1004,6 +1011,15 @@
                             <span class="badge badge-purple mono" id="vault-crypto-count"><i class="fa-brands fa-bitcoin"></i> 0 Crypto</span>
                             <span class="badge badge-emerald mono" id="vault-emails-count"><i class="fa-solid fa-envelope"></i> 0 Emails</span>
                         </div>
+                    </div>
+
+                    <!-- Operator Annotations / Notes Section -->
+                    <div style="margin-bottom: 24px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--accent-emerald);"><i class="fa-solid fa-pen-to-square"></i> Mission Notes & Operator Annotations</h4>
+                            <button class="btn-mini-action" onclick="saveVaultSessionNotes()" style="padding: 4px 12px; background: var(--bg-surface-elevated); color: var(--accent-emerald); border-color: rgba(16,185,129,0.3); font-weight: 600;"><i class="fa-solid fa-floppy-disk"></i> Save Notes</button>
+                        </div>
+                        <textarea id="vault-session-notes" class="form-textarea mono" rows="3" placeholder="Add operational notes, actor attribution, investigative leads for this session..."></textarea>
                     </div>
 
                     <!-- Discovered Crypto Wallets Section -->
@@ -1151,7 +1167,10 @@
                         </div>
                     </div>
 
-                    <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end;">
+                    <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end; flex-wrap: wrap;">
+                        <button type="button" class="btn-secondary mono" style="color: var(--accent-rose); border-color: rgba(244,63,94,0.3);" onclick="purgeAllSessions()">
+                            <i class="fa-solid fa-triangle-exclamation"></i> Purge All DB Sessions
+                        </button>
                         <button type="button" class="btn-secondary mono" onclick="clearIndexedDBCache()">
                             <i class="fa-solid fa-trash"></i> Clear IndexedDB Cache
                         </button>
@@ -1396,6 +1415,58 @@
             logTerminal('Console buffer cleared.');
         }
 
+        // Bug 7 fix: XSS-safe HTML escaping utility
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        // Feature 1: Delete session with confirmation
+        async function deleteSession(sessionId) {
+            if (!confirm(`Are you sure you want to permanently delete Session #${sessionId} and ALL its associated data (pages, links, keywords, reports)?`)) return;
+            try {
+                const resp = await fetch(`/api/sessions/${sessionId}`, { method: 'DELETE' });
+                const data = await resp.json();
+                showToast(data.message || `Session #${sessionId} deleted.`, '<i class="fa-solid fa-trash"></i>');
+                logTerminal(`[DELETE] ${data.message}`);
+                await refreshSystemData(true);
+                await refreshSessionsTable();
+            } catch (err) {
+                showToast('Failed to delete session', '<i class="fa-solid fa-xmark"></i>');
+            }
+        }
+
+        // Feature 4: Calculate threat score from session data
+        function calculateThreatScore(session) {
+            let score = 0;
+            const pc = session.page_count || 0;
+            const crypto = (session.crypto_count || 0);
+            const emails = (session.email_count || 0);
+            score += Math.min(pc * 5, 25);
+            score += crypto * 15;
+            score += emails * 5;
+            if (score >= 60) return { level: 'CRITICAL', color: 'var(--accent-rose)', bg: 'rgba(244,63,94,0.15)' };
+            if (score >= 35) return { level: 'HIGH', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' };
+            if (score >= 15) return { level: 'MEDIUM', color: 'var(--accent-amber)', bg: 'rgba(245,158,11,0.1)' };
+            return { level: 'LOW', color: 'var(--accent-emerald)', bg: 'rgba(16,185,129,0.15)' };
+        }
+
+        // Feature 6: Purge all sessions
+        async function purgeAllSessions() {
+            if (!confirm('⚠️ DANGER: This will permanently delete ALL sessions, crawled pages, links, keywords, and reports from the database. This action is irreversible.\n\nAre you absolutely sure?')) return;
+            try {
+                const resp = await fetch('/api/sessions/purge', { method: 'DELETE' });
+                const data = await resp.json();
+                showToast(data.message || 'All sessions purged.', '<i class="fa-solid fa-fire"></i>');
+                logTerminal(`[PURGE] ${data.message}`);
+                await refreshSystemData(true);
+                await refreshSessionsTable();
+            } catch (err) {
+                showToast('Failed to purge sessions', '<i class="fa-solid fa-xmark"></i>');
+            }
+        }
+
+
         function selectPreset(depth, workers, delay, el) {
             document.querySelectorAll('.preset-card').forEach(c => c.classList.remove('selected'));
             el.classList.add('selected');
@@ -1410,7 +1481,7 @@
         let activeCrawlSessionId = null;
         let activePollInterval = null;
 
-        function setCrawlRunningState(isRunning, sessionId = null) {
+        function setCrawlRunningState(isRunning, sessionId = null, count = 0) {
             const btnDispatch = document.getElementById('btn-dispatch-recon');
             const btnStop = document.getElementById('btn-stop-recon');
             const btnStreamStop = document.getElementById('btn-stream-stop');
@@ -1419,7 +1490,8 @@
                 activeCrawlSessionId = sessionId;
                 if (btnDispatch) {
                     btnDispatch.disabled = true;
-                    btnDispatch.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Swarm Active (Crawling Target...)';
+                    const countLabel = count > 0 ? ` (${count} Pages Indexed)` : ' (Connecting...)';
+                    btnDispatch.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Swarm Active${countLabel}`;
                 }
                 if (btnStop) btnStop.style.display = 'inline-flex';
                 if (btnStreamStop) btnStreamStop.style.display = 'inline-flex';
@@ -1513,7 +1585,8 @@
                     const pageCount = data.pages ? data.pages.length : 0;
                     logTerminal(`[CRAWL] Session #${sessionId}: ${session.status} — ${pageCount} pages indexed so far`);
 
-                    // Live update KPI metrics and session table dynamically
+                    // Live update KPI metrics, session table, and button count dynamically
+                    setCrawlRunningState(true, sessionId, pageCount);
                     await refreshSystemData(true);
                     await refreshSessionsTable();
 
@@ -1576,29 +1649,40 @@
                             ? `<button class="btn-secondary mono" style="color:var(--accent-rose); border-color:rgba(244,63,94,0.3); margin-left:6px;" onclick="stopActiveCrawl(${s.id})"><i class="fa-solid fa-stop"></i> Stop</button>`
                             : '';
 
-                        const seedUrlHtml = s.seed_url 
-                            ? `<a href="${s.seed_url}" target="_blank" rel="noreferrer" style="color: var(--accent-cyan); text-decoration: none; display: inline-flex; align-items: center; gap: 6px;" title="Open ${s.seed_url}">
-                                <span>${s.seed_url}</span>
+                        // Bug 7 fix: escape seed_url to prevent XSS
+                        const safeSeedUrl = escapeHtml(s.seed_url);
+                        const rawSeedUrl = s.seed_url || '';
+                        const seedUrlHtml = s.seed_url
+                            ? `<a href="${safeSeedUrl}" target="_blank" rel="noreferrer" style="color: var(--accent-cyan); text-decoration: none; display: inline-flex; align-items: center; gap: 6px;" title="Open target">
+                                <span>${safeSeedUrl}</span>
                                 <i class="fa-solid fa-arrow-up-right-from-square" style="font-size: 0.75rem;"></i>
                                </a>
-                               <button class="btn-mini-action" onclick="navigator.clipboard.writeText('${s.seed_url}'); showToast('Target URL copied!', '<i class=\\'fa-solid fa-copy\\'></i>')" title="Copy URL" style="margin-left: 6px; padding: 2px 6px;">
+                               <button class="btn-mini-action" onclick="navigator.clipboard.writeText(${JSON.stringify(rawSeedUrl)}); showToast('Target URL copied!', '<i class=\\'fa-solid fa-copy\\'></i>')" title="Copy URL" style="margin-left: 6px; padding: 2px 6px;">
                                 <i class="fa-solid fa-copy" style="font-size: 0.7rem;"></i>
                                </button>`
                             : `<span class="text-dim">Direct Crawl</span>`;
 
+                        // Feature 4: Threat score badge
+                        const threat = calculateThreatScore(s);
+                        const threatBadge = `<span class="badge mono" style="color:${threat.color}; background:${threat.bg}; border-color:${threat.color}30;"><i class="fa-solid fa-shield-halved"></i> ${threat.level}</span>`;
+
                         tr.innerHTML = `
                             <td class="mono" style="color: var(--accent-cyan); font-weight: 700;">#${s.id}</td>
-                            <td style="font-weight: 600; color: #fff;">${s.name}</td>
+                            <td style="font-weight: 600; color: #fff;">${escapeHtml(s.name)}</td>
                             <td class="mono" style="max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                 ${seedUrlHtml}
                             </td>
                             <td>${statusBadge}</td>
+                            <td>${threatBadge}</td>
                             <td class="mono text-dim">${s.started_at ? s.started_at.substring(0, 16) : "-"}</td>
                             <td>
                                 <button class="btn-secondary mono" onclick="inspectSession(${s.id})">
                                     <i class="fa-solid fa-magnifying-glass-chart"></i> Inspect
                                 </button>
                                 ${stopBtn}
+                                <button class="btn-secondary mono" style="color:var(--accent-rose); border-color:rgba(244,63,94,0.2); margin-left:4px;" onclick="deleteSession(${s.id})" title="Delete session">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
                             </td>
                         `;
                         tbody.appendChild(tr);
@@ -1905,9 +1989,14 @@
                 document.getElementById('vault-data-container').style.display = 'block';
                 document.getElementById('vault-session-name').innerText = `${data.session.name} (#${data.session.id})`;
 
+                // Populate notes field (Feature 5)
+                const notesEl = document.getElementById('vault-session-notes');
+                if (notesEl) notesEl.value = data.session.notes || '';
+
                 const targetContainer = document.getElementById('vault-session-target');
                 if (data.session.seed_url) {
-                    targetContainer.innerHTML = `Target: <a href="${data.session.seed_url}" target="_blank" rel="noreferrer" style="color:var(--accent-cyan); text-decoration:none; display:inline-flex; align-items:center; gap:6px;"><span>${data.session.seed_url}</span> <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.75rem;"></i></a> <button class="btn-mini-action" onclick="navigator.clipboard.writeText('${data.session.seed_url}'); showToast('URL copied!', '<i class=\\'fa-solid fa-copy\\'></i>')" style="margin-left:6px; padding:2px 6px;"><i class="fa-solid fa-copy" style="font-size:0.7rem;"></i></button>`;
+                    const safeUrl = escapeHtml(data.session.seed_url);
+                    targetContainer.innerHTML = `Target: <a href="${safeUrl}" target="_blank" rel="noreferrer" style="color:var(--accent-cyan); text-decoration:none; display:inline-flex; align-items:center; gap:6px;"><span>${safeUrl}</span> <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.75rem;"></i></a> <button class="btn-mini-action" onclick="navigator.clipboard.writeText(${JSON.stringify(data.session.seed_url)}); showToast('URL copied!', '<i class=\\'fa-solid fa-copy\\'></i>')" style="margin-left:6px; padding:2px 6px;"><i class="fa-solid fa-copy" style="font-size:0.7rem;"></i></button>`;
                 } else {
                     targetContainer.innerText = 'Target: Direct Crawl';
                 }
@@ -1928,12 +2017,13 @@
                     const el = document.createElement('div');
                     el.className = 'preset-card mono';
                     el.style.textAlign = 'left';
+                    const safeAddr = escapeHtml(c.a);
                     el.innerHTML = `
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <span class="badge badge-amber">${c.t}</span>
-                            <button class="btn-mini-action" onclick="navigator.clipboard.writeText('${c.a}'); showToast('Wallet copied!', '<i class=\\'fa-solid fa-copy\\'></i>')"><i class="fa-solid fa-copy"></i></button>
+                            <button class="btn-mini-action" onclick="navigator.clipboard.writeText(${JSON.stringify(c.a)}); showToast('Wallet copied!', '<i class=\\'fa-solid fa-copy\\'></i>')"><i class="fa-solid fa-copy"></i></button>
                         </div>
-                        <span style="font-size:0.75rem; word-break:break-all; margin-top:4px; display:block;">${c.a}</span>
+                        <span style="font-size:0.75rem; word-break:break-all; margin-top:4px; display:block;">${safeAddr}</span>
                     `;
                     cryptoGrid.appendChild(el);
                 });
@@ -1948,9 +2038,10 @@
                     el.style.display = 'inline-flex';
                     el.style.alignItems = 'center';
                     el.style.gap = '6px';
+                    const safeEmail = escapeHtml(e);
                     el.innerHTML = `
-                        <a href="mailto:${e}" style="color:var(--accent-cyan); text-decoration:none;">${e}</a>
-                        <button class="btn-mini-action" onclick="navigator.clipboard.writeText('${e}'); showToast('Email copied!', '<i class=\\'fa-solid fa-copy\\'></i>')" style="background:transparent; border:none; color:var(--text-dim); padding:0; cursor:pointer;"><i class="fa-solid fa-copy"></i></button>
+                        <a href="mailto:${safeEmail}" style="color:var(--accent-cyan); text-decoration:none;">${safeEmail}</a>
+                        <button class="btn-mini-action" onclick="navigator.clipboard.writeText(${JSON.stringify(e)}); showToast('Email copied!', '<i class=\\'fa-solid fa-copy\\'></i>')" style="background:transparent; border:none; color:var(--text-dim); padding:0; cursor:pointer;"><i class="fa-solid fa-copy"></i></button>
                     `;
                     emailsGrid.appendChild(el);
                 });
@@ -1961,19 +2052,20 @@
                 pagesTbody.innerHTML = '';
                 data.pages.forEach(p => {
                     const row = document.createElement('tr');
+                    const safeUrl = escapeHtml(p.url);
                     row.innerHTML = `
                         <td class="mono" style="word-break:break-all; font-size:0.75rem;">
-                            <a href="${p.url}" target="_blank" rel="noreferrer" style="color: var(--accent-cyan); text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
-                                <span>${p.url}</span>
+                            <a href="${safeUrl}" target="_blank" rel="noreferrer" style="color: var(--accent-cyan); text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
+                                <span>${safeUrl}</span>
                                 <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:0.7rem;"></i>
                             </a>
-                            <button class="btn-mini-action" onclick="navigator.clipboard.writeText('${p.url}'); showToast('Page URL copied!', '<i class=\\'fa-solid fa-copy\\'></i>')" title="Copy URL" style="margin-left:4px; padding:1px 4px;">
+                            <button class="btn-mini-action" onclick="navigator.clipboard.writeText(${JSON.stringify(p.url)}); showToast('Page URL copied!', '<i class=\\'fa-solid fa-copy\\'></i>')" title="Copy URL" style="margin-left:4px; padding:1px 4px;">
                                 <i class="fa-solid fa-copy" style="font-size:0.65rem;"></i>
                             </button>
                         </td>
-                        <td style="color:#fff;">${p.title || 'Untitled'}</td>
+                        <td style="color:#fff;">${escapeHtml(p.title || 'Untitled')}</td>
                         <td><span class="badge badge-emerald mono">${p.status_code || 200}</span></td>
-                        <td class="mono text-dim">${p.language || '-'}</td>
+                        <td class="mono text-dim">${escapeHtml(p.language || '-')}</td>
                         <td class="mono" style="color:var(--accent-purple);">${Number(p.relevance_score || 0).toFixed(2)}</td>
                     `;
                     pagesTbody.appendChild(row);
@@ -1988,6 +2080,49 @@
             document.getElementById('vault-session-selector').value = id;
             loadVaultSession(id);
             switchTab('vault');
+        }
+
+        // Feature 5: Save session notes
+        async function saveVaultSessionNotes() {
+            const sid = document.getElementById('vault-session-selector').value;
+            if (!sid) {
+                showToast('Please select a session first', '⚠️');
+                return;
+            }
+            const notes = document.getElementById('vault-session-notes').value;
+            try {
+                const formData = new FormData();
+                formData.append('notes', notes);
+                const resp = await fetch(`/api/sessions/${sid}/notes`, { method: 'PATCH', body: formData });
+                const data = await resp.json();
+                showToast(data.message || 'Mission notes saved!', '<i class="fa-solid fa-floppy-disk"></i>');
+                logTerminal(`[VAULT] Notes updated for Session #${sid}.`);
+            } catch (err) {
+                showToast('Failed to save notes', '<i class="fa-solid fa-xmark"></i>');
+            }
+        }
+
+        // Feature 2: Raw data export (JSON/CSV)
+        function exportSessionRaw(fmt) {
+            const sid = document.getElementById('vault-session-selector').value;
+            if (!sid) {
+                showToast('Please select a session first', '⚠️');
+                return;
+            }
+            window.open(`/api/sessions/${sid}/export?fmt=${fmt}`, '_blank');
+            showToast(`Downloading ${fmt.toUpperCase()} session export...`, '<i class="fa-solid fa-download"></i>');
+        }
+
+        // Feature 1: Delete session from Vault Inspector
+        async function deleteCurrentVaultSession() {
+            const sid = document.getElementById('vault-session-selector').value;
+            if (!sid) {
+                showToast('Please select a session first', '⚠️');
+                return;
+            }
+            await deleteSession(sid);
+            document.getElementById('vault-session-selector').value = '';
+            document.getElementById('vault-data-container').style.display = 'none';
         }
 
         async function generateReportForCurrentSession(fmt) {

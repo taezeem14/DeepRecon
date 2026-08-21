@@ -65,3 +65,54 @@ def test_api_stop_all_scans():
     data = response.json()
     assert data.get("success") is True
 
+
+def test_api_session_notes_and_export():
+    client = TestClient(app)
+    # Start a scan to create a session
+    resp = client.post("/api/scan", data={"url": "http://testtarget12345.onion", "session_name": "TEST_SESSION_EXPORT"})
+    assert resp.status_code == 200
+    sid = resp.json()["session_id"]
+
+    # Test update notes
+    patch_resp = client.patch(f"/api/sessions/{sid}/notes", data={"notes": "High value threat target"})
+    assert patch_resp.status_code == 200
+    assert patch_resp.json()["success"] is True
+
+    # Verify notes persisted in get_session
+    get_resp = client.get(f"/api/sessions/{sid}")
+    assert get_resp.status_code == 200
+    assert get_resp.json()["session"]["notes"] == "High value threat target"
+
+    # Test JSON export
+    export_json = client.get(f"/api/sessions/{sid}/export?fmt=json")
+    assert export_json.status_code == 200
+    assert "session" in export_json.json()
+
+    # Test CSV export
+    export_csv = client.get(f"/api/sessions/{sid}/export?fmt=csv")
+    assert export_csv.status_code == 200
+    assert "text/csv" in export_csv.headers["content-type"]
+
+    # Test Cascade Delete
+    del_resp = client.delete(f"/api/sessions/{sid}")
+    assert del_resp.status_code == 200
+    assert del_resp.json()["success"] is True
+
+
+def test_api_reports_path_traversal_blocked():
+    client = TestClient(app)
+    # Test path traversal attempts
+    resp1 = client.get("/reports/../../etc/passwd")
+    assert resp1.status_code in (400, 404)
+
+    resp2 = client.get("/reports/..%2F..%2Fconfig.py")
+    assert resp2.status_code in (400, 404)
+
+
+def test_api_purge_sessions():
+    client = TestClient(app)
+    purge_resp = client.delete("/api/sessions/purge")
+    assert purge_resp.status_code == 200
+    assert purge_resp.json()["success"] is True
+
+

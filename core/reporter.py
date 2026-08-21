@@ -84,9 +84,30 @@ class ReportGenerator:
     ) -> dict[str, Any]:
         email_hits = sorted({email for page in pages for email in (page.get("meta", {}) or {}).get("emails", [])})
         crypto_hits = {
-            "bitcoin": sorted({item for page in pages for item in (page.get("meta", {}) or {}).get("btc", [])}),
-            "ethereum": sorted({item for page in pages for item in (page.get("meta", {}) or {}).get("eth", [])}),
-            "monero": sorted({item for page in pages for item in (page.get("meta", {}) or {}).get("xmr", [])}),
+            "bitcoin": sorted({
+                item for page in pages
+                for item in (
+                    (page.get("meta", {}) or {}).get("crypto_addresses")
+                    or (page.get("meta", {}) or {}).get("crypto")
+                    or {}
+                ).get("bitcoin", (page.get("meta", {}) or {}).get("btc", []))
+            }),
+            "ethereum": sorted({
+                item for page in pages
+                for item in (
+                    (page.get("meta", {}) or {}).get("crypto_addresses")
+                    or (page.get("meta", {}) or {}).get("crypto")
+                    or {}
+                ).get("ethereum", (page.get("meta", {}) or {}).get("eth", []))
+            }),
+            "monero": sorted({
+                item for page in pages
+                for item in (
+                    (page.get("meta", {}) or {}).get("crypto_addresses")
+                    or (page.get("meta", {}) or {}).get("crypto")
+                    or {}
+                ).get("monero", (page.get("meta", {}) or {}).get("xmr", []))
+            }),
         }
         return {
             "session": session,
